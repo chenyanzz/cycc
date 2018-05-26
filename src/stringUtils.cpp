@@ -2,7 +2,8 @@
  * Created by cy on 2018/5/24.
  */
 
-#include "include/stringUtils.h"
+#include "stringUtils.h"
+#include "YException.h"
 
 string trim(const string &str) {
     string::size_type pos = str.find_first_not_of(' ');
@@ -45,9 +46,32 @@ int split(const string &str, vector<string> &ret_, string sep) {
 
 bool isFirstSubStr(const char *total, const char *substr) {
 
-    for (int i = 0; i < substr[i]!=0; i++) {
+    for (int i = 0; i < substr[i] != 0; i++) {
         if (total[i] != substr[i])return false;
     }
 
     return true;
+}
+
+unsigned long long toUInt(const char *s, int radix) {
+    unsigned long long val = 0;
+    for (int i = 0; s[i] != 0; i++) {
+        int hexletter = (s[i] | 0x20);
+        int bitval;
+        if (s[i] >= '0' && s[i] <= '9') {
+            bitval = s[i] - '0';
+        } else if (hexletter >= 'a' && hexletter <= 'f') {
+            bitval = s[i] - 'a' + 10;
+        } else {
+            throw new YException(R"(in number "%s", '%c' is a illegal char)", s, s[i]);
+        }
+
+        if (bitval >= radix) {
+            throw new YException(R"(in number "%s", '%c' is not a proper char for radix=%d)", s, s[i], radix);
+        }
+
+        val *= radix;
+        val += bitval;
+    }
+    return val;
 }

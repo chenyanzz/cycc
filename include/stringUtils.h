@@ -14,3 +14,5 @@ using namespace std;
 string trim(const string& str);
 
 bool isFirstSubStr(const char*, const char* substr);
+
+unsigned long long toUInt(const char* s,int radix=10);

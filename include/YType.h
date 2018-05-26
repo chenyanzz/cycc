@@ -32,9 +32,9 @@ protected:
     YType() = default;
 
 public:
-    static YType *addType(const char *name, const int size, const BaseType baseType);
+    static YType *add(const char *name, const int size, const BaseType baseType);
 
-    static YType *getType(const char *code);
+    static YType *parse(const char *code);
 
     static void init();
 

@@ -9,11 +9,4 @@
 #include "common.h"
 
 class YCode {
-public:
-    static void init(){
-        throw new YException("YCode::init() called");
-    };
-    static void terminate(){
-        throw new YException("YCode::terminate() called");
-    };
 };

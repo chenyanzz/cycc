@@ -10,10 +10,10 @@
 
 set<YType *> YType::types;
 
-const char* YType::str_unsigned = "unsigned ";
-const char* YType::str_signed = "signed ";
+const char *YType::str_unsigned = "unsigned ";
+const char *YType::str_signed = "signed ";
 
-YType *YType::addType(const char *name, const int size, const BaseType baseType) {
+YType *YType::add(const char *name, const int size, const BaseType baseType) {
     YType *ptype = nullptr;
 
     if (baseType == cNum) {
@@ -39,21 +39,21 @@ YType *YType::addType(const char *name, const int size, const BaseType baseType)
     return ptype;
 }
 
-YType *YType::getType(const char *code) {
+YType *YType::parse(const char *code) {
 
     string str_type = code;
     bool isSigned = isFirstSubStr(code, str_signed);
     if (isSigned) {
-        str_type = string(code+strlen(str_signed));
+        str_type = string(code + strlen(str_signed));
     }
 
-    auto it = cyfind_if(types, [=](YType *pt) -> bool{ pt->name == str_type; });
-    if (it == types.end()){
+    auto it = cyfind_if(types, [=](YType *pt) -> bool { pt->name == str_type; });
+    if (it == types.end()) {
         throw new YException(R"(no such type: "%s")", code);
     }
 
-    if(isSigned){
-        if ((*it)->baseType!=cNum){
+    if (isSigned) {
+        if ((*it)->baseType != cNum) {
             throw new YException(R"(no such type: "%s")", code);
         }
     }
@@ -62,23 +62,26 @@ YType *YType::getType(const char *code) {
 }
 
 void YType::init() {
-    YType::addType("long long", 8, YType::cNum);
-    YType::addType("unsigned long long", 8, YType::cNum);
+    YType::add("long long", 8, YType::cNum);
+    YType::add("unsigned long long", 8, YType::cNum);
 
-    YType::addType("long", 4, YType::cNum);
-    YType::addType("unsigned long", 4, YType::cNum);
+    YType::add("long", 4, YType::cNum);
+    YType::add("unsigned long", 4, YType::cNum);
 
-    YType::addType("int", 4, YType::cNum);
-    YType::addType("unsigned int", 4, YType::cNum);
+    YType::add("int", 4, YType::cNum);
+    YType::add("unsigned int", 4, YType::cNum);
 
-    YType::addType("int", 4, YType::cNum);
-    YType::addType("unsigned int", 4, YType::cNum);
+    YType::add("int", 4, YType::cNum);
+    YType::add("unsigned int", 4, YType::cNum);
 
-    YType::addType("short", 2, YType::cNum);
-    YType::addType("unsined short", 2, YType::cNum);
+    YType::add("short", 2, YType::cNum);
+    YType::add("unsined short", 2, YType::cNum);
 
-    YType::addType("char", 1, YType::cNum);
-    YType::addType("unsigned char", 1, YType::cNum);
+    YType::add("char", 1, YType::cNum);
+    YType::add("unsigned char", 1, YType::cNum);
+
+    YType::add("float", 4, YType::cNum);
+    YType::add("double", 8, YType::cNum);
 }
 
 void YType::terminate() {

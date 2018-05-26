@@ -5,4 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(include)
 
-add_executable(cycc main.cpp include/YCode.h include/common.h stringUtils.cpp include/stringUtils.h YType.cpp include/YType.h YNum.cpp include/YNum.h include/YException.h YExpression.cpp include/YExpression.h)
+file(GLOB SRC src/*c src/*.cpp)
+file(GLOB HEADER include/*.h)
+
+add_executable(cycc ${SRC} ${HEADER})

@@ -6,8 +6,16 @@
  * A class for parsing expressions kind like "(i++)", "1+1" , "int_ret_func()" etc..
  */
 
-class YExpression {
-    //TODO: IT IS NOT IMPLEMENTED
+
+#include "YCode.h"
+#include "YVal.h"
+
+class YEpxression : YCode {
+
+public:
+    static YEpxression *parse(char *expr);
+
+    YVal exec();
 };
 
 
