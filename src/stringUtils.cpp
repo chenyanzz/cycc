@@ -61,7 +61,7 @@ unsigned long long toUInt(const char *s, int radix) {
         if (s[i] >= '0' && s[i] <= '9') {
             bitval = s[i] - '0';
         } else if (hexletter >= 'a' && hexletter <= 'f') {
-            bitval = s[i] - 'a' + 10;
+            bitval = hexletter - 'a' + 10;
         } else {
             throw new YException(R"(in number "%s", '%c' is a illegal char)", s, s[i]);
         }

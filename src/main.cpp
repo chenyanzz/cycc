@@ -1,4 +1,6 @@
-#include "tests"
+
+#include <common.h>
+#include "test.h"
 
 const vector<string> cycc_seperators = {";", "{", "}", "(", ")", " ", "\n"};
 
