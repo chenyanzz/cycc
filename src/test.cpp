@@ -1,6 +1,7 @@
 /**
  * Created by cy on 2018/5/26.
  */
+#include <iostream>
 #include "test.h"
 
 #include "common.h"
@@ -19,45 +20,60 @@ void test_YNum() {
     types[i++] = (YNum *) YType::parse("signed short");
     try {
         types[i++] = (YNum *) YType::parse("hia int");
-    } catch (YException *e) {
-        printf("%s\n", e->what());
+    } catch (YException e) {
+        e.print();
     }
     try {
         types[i++] = (YNum *) YType::parse("int hia");
-    } catch (YException *e) {
-        printf("%s\n", e->what());
+    } catch (YException e) {
+        e.print();
     }
     try {
         types[i++] = (YNum *) YType::parse("hiahia");
-    } catch (YException *e) {
-        printf("%s\n", e->what());
+    } catch (YException e) {
+        e.print();
     }
 
     YType::terminate();
 }
 
 void test_toUInt() {
-    unsigned long long nums[100];
+
+    cout<<"test_toUInt:"<<endl;
+
     int i = 0;
-//    nums[i++] = toUInt("12345");
-//    nums[i++] = toUInt("25050", 10);
-//    nums[i++] = toUInt("077", 8);
-    nums[i++] = toUInt("aBcDe", 16);
-    nums[i++] = toUInt("10101010", 2);
+
+    cout << toUInt("12345") <<endl;
+    cout<<toUInt("25050", 10)<<endl;
+    cout<<toUInt("077", 8)<<endl;
+    cout<<toUInt("aBcDe", 16)<<endl;
+    cout<<toUInt("10101010", 2)<<endl;
+
     try {
-        nums[i++] = toUInt("aBcDe", 10);
-    } catch (YException *e) {
-        printf("%s\n", e->what());
+        cout<<toUInt("aBcDe", 10)<<endl;
+    } catch (YException e) {
+        e.print();
     }
     try {
-        nums[i++] = toUInt("1$!@@@", 10);
-    } catch (YException *e) {
-        printf("%s\n", e->what());
+        cout<<toUInt("1$!@@@", 10)<<endl;
+    } catch (YException e) {
+        e.print();
     }
+
 }
 
+void test_exception() {
+
+    cout<<"test_exception:"<<endl;
+
+    YException("test %d %c %s", 233, 'z', "hia").print();
+    YInvalidCharException("test test $",10,"not a legal char in C").print();
+    YNoSuchTypeException("haha").print();
+
+}
 
 void doTests() {
+    test_exception();
     test_YNum();
     test_toUInt();
 }
