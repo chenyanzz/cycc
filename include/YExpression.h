@@ -7,10 +7,10 @@
  */
 
 
-#include "YCode.h"
+#include "CYCC.h"
 #include "YVal.h"
 
-class YEpxression : YCode {
+class YEpxression : CYCC {
 
 public:
     static YEpxression *parse(char *expr);

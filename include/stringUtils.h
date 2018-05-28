@@ -13,6 +13,8 @@ using namespace std;
 
 string trim(const string& str);
 
-bool isFirstSubStr(const char*, const char* substr);
+int split(const string& str, vector<string>& ret_, string sep);
 
-unsigned long long toUInt(const char* s,int radix=10);
+bool isFirstSubStr(const char* total, const char* substr);
+
+bool isLastSubStr(const char* total,const int len, const char* substr,int substr_len);

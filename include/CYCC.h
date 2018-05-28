@@ -8,5 +8,6 @@
 
 #include "common.h"
 
-class YCode {
+class CYCC {
+    virtual void print()=0;
 };

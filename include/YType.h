@@ -7,17 +7,20 @@
 
 #pragma once
 
-#include "YCode.h"
+#include "CYCC.h"
 #include "common.h"
 
 
-class YType : YCode {
+class YType : CYCC {
 
 protected:
+
     static set<YType *> types;
 
     static const char *str_unsigned;
     static const char *str_signed;
+
+
 public:
     string name;
     int size;
@@ -29,7 +32,11 @@ public:
     BaseType baseType;
 
 protected:
-    YType() = default;
+    YType()= default;
+
+public:
+    typedef YType* pYType;
+    static pYType Char,UChar,Short,UShort,Int,UInt,Long,ULong,LongLong,ULongLong,Float,Double;
 
 public:
     static YType *add(const char *name, const int size, const BaseType baseType);
@@ -40,4 +47,6 @@ public:
 
     static void terminate();
 
+    void print() override ;
 };
+

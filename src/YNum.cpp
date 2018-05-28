@@ -3,3 +3,14 @@
  */
 
 #include "YNum.h"
+
+
+void YNum::print() {
+    cout << "(YNum){name=\"" << name << "\"";
+
+    if(bIsDecimal){
+        cout<<", decimal";
+    }
+
+    cout<<"}";
+}

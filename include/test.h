@@ -4,8 +4,4 @@
 
 #pragma once
 
-
-void test_YNum();
-void test_toUInt();
-
 void doTests();

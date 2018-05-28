@@ -10,6 +10,7 @@
 #include "common.h"
 #include <exception>
 #include "stdarg.h"
+#include "CYCC.h"
 
 class YException : exception {
 protected:

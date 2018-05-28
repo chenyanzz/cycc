@@ -2,22 +2,29 @@
 
 /**
  * Created by cy on 2018/5/26.
+ *
+ * The class for saving values.
  */
 
 #include "YType.h"
 
-class YVal {
+class YVal : CYCC {
 public:
-    static YVal parse(char *s);
+    static YVal parse(char* s);
+
+    void print() override ;
+
+    ~YVal();
 
 protected:
-    YType* ptype;
-    void* ptr;
+    YType* ptype;//ptype is destroyed when going out of scope.
+    void* pdata;
 
-    YVal(){};
+    static YVal* parseInt(const char* s, bool* bSuccess);
 
-    static YVal parseNum(char *s, bool *bSuccess);
+    friend void test_YVal();//for debug
 
+    YVal() = default;
 };
 
 

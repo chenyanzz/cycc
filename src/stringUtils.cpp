@@ -7,15 +7,27 @@
 
 
 string trim(const string& str) {
-    string::size_type pos = str.find_first_not_of(' ');
-    if(pos == string::npos) {
-        return str;
+    string::size_type first = 0, last = str.size();
+
+    //find first available char
+    for(string::size_type i = 0; i < str.size(); i++) {
+        char c = str.at(i);
+        if(c != ' ' && c != '\n' && c != '\r') {
+            break;
+        }
+        first++;
     }
-    string::size_type pos2 = str.find_last_not_of(' ');
-    if(pos2 != string::npos) {
-        return str.substr(pos, pos2 - pos + 1);
+
+    //find last available char
+    for(string::size_type i = str.size()-1; i >= first; i--) {
+        char c = str.at(i);
+        if(c != ' ' && c != '\n' && c != '\r') {
+            break;
+        }
+        last--;
     }
-    return str.substr(pos);
+
+    return str.substr(first, last - first);
 }
 
 
@@ -49,10 +61,18 @@ int split(const string& str, vector<string>& ret_, string sep) {
 
 bool isFirstSubStr(const char* total, const char* substr) {
 
-    for(int i = 0; i < substr[i] != 0; i++) {
+    for(int i = 0; substr[i] != 0; i++) {
         if(total[i] != substr[i])return false;
     }
 
+    return true;
+}
+
+
+bool isLastSubStr(const char* total, const int total_len, const char* substr, int substr_len) {
+    for(int i = total_len - 1, j = substr_len - 1; j >= 0; i--, j--) {
+        if(total[i] != substr[j])return false;
+    }
     return true;
 }
 
@@ -62,16 +82,19 @@ unsigned long long toUInt(const char* s, int radix) {
     for(int i = 0; s[i] != 0; i++) {
         int hexletter = (s[i] | 0x20);
         int bitval;
+
         if(s[i] >= '0' && s[i] <= '9') {
             bitval = s[i] - '0';
         } else if(hexletter >= 'a' && hexletter <= 'f') {
             bitval = hexletter - 'a' + 10;
+        } else if(s[i]) {
+
         } else {
-            throw (YException)YInvalidCharException(s, i, "illegal char in a number");
+            throw (YException) YInvalidCharException(s, i, "illegal char in a number");
         }
 
         if(bitval >= radix) {
-            throw (YException)YInvalidCharException(s, i, "illegal char in a number");
+            throw (YException) YInvalidCharException(s, i, "illegal char in a number");
         }
 
         val *= radix;

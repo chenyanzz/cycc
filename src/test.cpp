@@ -2,6 +2,7 @@
  * Created by cy on 2018/5/26.
  */
 #include <iostream>
+#include <YVal.h>
 #include "test.h"
 
 #include "common.h"
@@ -9,71 +10,98 @@
 #include "YNum.h"
 #include "stringUtils.h"
 
+
 void test_YNum() {
-    YType::init();
+    cout << "******** test_YNum ********" << endl;
 
-    YNum *types[100];
+    YNum* types[100];
     int i = 0;
 
-    types[i++] = (YNum *) YType::parse("int");
-    types[i++] = (YNum *) YType::parse("unsigned long long");
-    types[i++] = (YNum *) YType::parse("signed short");
-    try {
-        types[i++] = (YNum *) YType::parse("hia int");
-    } catch (YException e) {
-        e.print();
-    }
-    try {
-        types[i++] = (YNum *) YType::parse("int hia");
-    } catch (YException e) {
-        e.print();
-    }
-    try {
-        types[i++] = (YNum *) YType::parse("hiahia");
-    } catch (YException e) {
-        e.print();
-    }
+    YType::parse("int")->print();puts("");
+    YType::UChar->print();puts("");
+    YType::parse("unsigned long long")->print();puts("");
+    YType::parse("signed short")->print();puts("");
 
-    YType::terminate();
+    try {
+        types[i++] = (YNum*) YType::parse("hia int");
+    } catch(YException& e) {
+        e.print();
+    }
+    try {
+        types[i++] = (YNum*) YType::parse("int hia");
+    } catch(YException& e) {
+        e.print();
+    }
+    try {
+        types[i++] = (YNum*) YType::parse("hiahia");
+    } catch(YException& e) {
+        e.print();
+    }
 }
 
-void test_toUInt() {
-
-    cout<<"test_toUInt:"<<endl;
-
-    int i = 0;
-
-    cout << toUInt("12345") <<endl;
-    cout<<toUInt("25050", 10)<<endl;
-    cout<<toUInt("077", 8)<<endl;
-    cout<<toUInt("aBcDe", 16)<<endl;
-    cout<<toUInt("10101010", 2)<<endl;
-
-    try {
-        cout<<toUInt("aBcDe", 10)<<endl;
-    } catch (YException e) {
-        e.print();
-    }
-    try {
-        cout<<toUInt("1$!@@@", 10)<<endl;
-    } catch (YException e) {
-        e.print();
-    }
-
-}
 
 void test_exception() {
-
-    cout<<"test_exception:"<<endl;
+    cout << "******** test_exception ********" << endl;
 
     YException("test %d %c %s", 233, 'z', "hia").print();
-    YInvalidCharException("test test $",10,"not a legal char in C").print();
+    YInvalidCharException("test test $", 10, "$ is illegal").print();
     YNoSuchTypeException("haha").print();
 
 }
 
+
+void test_stringUtils() {
+    cout << "******** test_stringUtils ********" << endl;
+
+    string s;
+    bool b;
+
+    s = trim("\n \n hello \n ");
+    cout << s << endl;
+
+    vector<string> vec;
+    split("a;b;c;d", vec, ";");
+    int p = 0;
+    cout << vec[p++] << " ";
+    cout << vec[p++] << " ";
+    cout << vec[p++] << " ";
+    cout << vec[p++] << " ";
+    cout << endl;
+
+    b = isFirstSubStr("abcde", "abc");
+    cout << b << " ";
+    b = isLastSubStr("abcde", 5, "de", 2);
+    cout << b << " ";
+    cout << endl;
+    b;
+}
+
+
+void test_YVal() {
+    cout << "******** test_YVal ********" << endl;
+
+    bool bSuccess;
+    YVal::parseInt("12345", &bSuccess)->print();puts("");
+    YVal::parseInt("-12345", &bSuccess)->print();puts("");
+    YVal::parseInt("12345U", &bSuccess)->print();puts("");
+    YVal::parseInt("12345L", &bSuccess)->print();puts("");
+    YVal::parseInt("12345UL", &bSuccess)->print();puts("");
+    YVal::parseInt("12345ULL", &bSuccess)->print();puts("");
+
+    YVal::parseInt("0xabc", &bSuccess)->print();puts("");
+    YVal::parseInt("0b101", &bSuccess)->print();puts("");
+    YVal::parseInt("0377", &bSuccess)->print();puts("");
+
+}
+
+
 void doTests() {
+    YType::init();
+
     test_exception();
     test_YNum();
-    test_toUInt();
+    test_stringUtils();
+    test_YVal();
+
+    YType::terminate();
 }

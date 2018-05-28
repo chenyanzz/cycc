@@ -6,10 +6,12 @@
 
 #pragma once
 
+#include "CYCC.h"
 #include <algorithm>
 #include <string>
 #include <vector>
 #include <set>
+#include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include "stringUtils.h"

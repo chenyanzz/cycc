@@ -8,10 +8,16 @@
 
 #include "YType.h"
 
-class YNum :YType{
+class YNum : YType {
+
+protected:
+    YNum():bIsSigned(true),bIsDecimal(false){};
 
 public:
-    bool bSigned;
+    bool bIsSigned:1;
+    bool bIsDecimal:1;//true if type is float or double
+
+    void print() override;
 
     friend class YType;
 };

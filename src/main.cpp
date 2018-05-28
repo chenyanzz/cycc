@@ -9,8 +9,8 @@ int main() {
 
     try {
         doTests();
-    } catch (YException *e) {
-        printf("cycc has encountered an exception: %s", e->what());
+    } catch (YException& e) {
+        e.print();
         return -1;
     }
 
