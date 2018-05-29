@@ -8,31 +8,18 @@
 
 YVal YVal::parse(char* s) {
 
-    //    YType* ptype = YType::parse();
-    //
-    //    YVal val;
-    //    val.ptype = ptype;
-    //
-    //    bool bSuccess;
-    //
-    //    parseInt(s, &bSuccess);
-    //    if(bSuccess) {
-    //
-    //    }
-
 }
 
 
-YVal* YVal::parseInt(const char* s, bool* pbSuccess) {
+YVal* YVal::parseInt(const char* __s) {
 
     int radix = 10;
     const int buf_size = 100;
     static char buf[buf_size];
-    strcpy_s(buf, buf_size, s);
+    strcpy_s(buf, buf_size, __s);
     char* pc_num = buf;
 
     bool bNegative = false;
-    *pbSuccess = true;
 
     /*prefix*/
 
@@ -71,7 +58,7 @@ YVal* YVal::parseInt(const char* s, bool* pbSuccess) {
                 break;
 
             default:
-                *pbSuccess = false;
+                throw (YException) YInvalidCharException(buf, pc_num - buf, "illegal char in a number prefix");
         }
     }
 
@@ -110,14 +97,12 @@ YVal* YVal::parseInt(const char* s, bool* pbSuccess) {
             bitval = *pc_num - '0';
         } else if(hexletter >= 'a' && hexletter <= 'f') {
             bitval = hexletter - 'a' + 10;
-        } else if(*pc_num) {
-
         } else {
-            throw (YException) YInvalidCharException(s, pc_num - s, "illegal char in a number");
+            throw (YException) YInvalidCharException(buf, pc_num - buf, "illegal char in a number body");
         }
 
         if(bitval >= radix) {
-            throw (YException) YInvalidCharException(s, pc_num - s, "illegal char in a number");
+            throw (YException) YInvalidCharException(buf, pc_num - buf, "illegal char in a number body");
         }
 
         num *= radix;
@@ -192,4 +177,32 @@ void YVal::print() {
         ptype->print();
         cout << "}";
     }
+}
+
+
+YVal* YVal::parseDecimal(const char* s) {
+    const int buf_size = 100;
+    static char buf[buf_size];
+    strcpy_s(buf, buf_size, s);
+    char* pc_num = buf;
+
+    bool bNegative = false;
+    char* pc_dot = pc_num;
+
+    /*prefix*/
+
+    switch(*pc_num) {
+        case '-':
+            bNegative = true;
+        case '+':
+            pc_num++;
+    }
+
+    while(*pc_dot!='.'){
+        if(*pc_dot==0){
+            return nullptr;
+        }
+        pc_dot++;
+    }
+
 }

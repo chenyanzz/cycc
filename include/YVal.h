@@ -20,7 +20,9 @@ protected:
     YType* ptype;//ptype is destroyed when going out of scope.
     void* pdata;
 
-    static YVal* parseInt(const char* s, bool* bSuccess);
+    static YVal* parseInt(const char* s);
+
+    static YVal* parseDecimal(const char* s);
 
     friend void test_YVal();//for debug
 

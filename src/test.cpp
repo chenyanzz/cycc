@@ -17,10 +17,14 @@ void test_YNum() {
     YNum* types[100];
     int i = 0;
 
-    YType::parse("int")->print();puts("");
-    YType::UChar->print();puts("");
-    YType::parse("unsigned long long")->print();puts("");
-    YType::parse("signed short")->print();puts("");
+    YType::parse("int")->print();
+    puts("");
+    YType::UChar->print();
+    puts("");
+    YType::parse("unsigned long long")->print();
+    puts("");
+    YType::parse("signed short")->print();
+    puts("");
 
     try {
         types[i++] = (YNum*) YType::parse("hia int");
@@ -81,26 +85,64 @@ void test_YVal() {
     cout << "******** test_YVal ********" << endl;
 
     bool bSuccess;
-    YVal::parseInt("12345", &bSuccess)->print();puts("");
-    YVal::parseInt("-12345", &bSuccess)->print();puts("");
-    YVal::parseInt("12345U", &bSuccess)->print();puts("");
-    YVal::parseInt("12345L", &bSuccess)->print();puts("");
-    YVal::parseInt("12345UL", &bSuccess)->print();puts("");
-    YVal::parseInt("12345ULL", &bSuccess)->print();puts("");
+    //YVal::parseInt("12345")->print();
+    //puts("");
+    //YVal::parseInt("-12345")->print();
+    //puts("");
+    //YVal::parseInt("12345U")->print();
+    //puts("");
+    //YVal::parseInt("12345L")->print();
+    //puts("");
+    //YVal::parseInt("12345UL")->print();
+    //puts("");
+    //YVal::parseInt("12345ULL")->print();
+    //puts("");
+    //
+    //YVal::parseInt("0xabc")->print();
+    //puts("");
+    //YVal::parseInt("0b101")->print();
+    //puts("");
+    //YVal::parseInt("0377")->print();
+    //puts("");
 
-    YVal::parseInt("0xabc", &bSuccess)->print();puts("");
-    YVal::parseInt("0b101", &bSuccess)->print();puts("");
-    YVal::parseInt("0377", &bSuccess)->print();puts("");
+    try {
+        YVal::parseInt("12345UU")->print();
+    } catch(YException& e) {
+        e.print();
+    }
 
+    try {
+        YVal::parseInt("abc")->print();
+    } catch(YException& e) {
+        e.print();
+    }
+
+    try {
+        YVal::parseInt("0xAzz")->print();
+    } catch(YException& e) {
+        e.print();
+    }
+
+    try {
+        YVal::parseInt("0999")->print();
+    } catch(YException& e) {
+        e.print();
+    }
+
+    try {
+        YVal::parseInt("$$%**")->print();
+    } catch(YException& e) {
+        e.print();
+    }
 }
 
 
 void doTests() {
     YType::init();
 
-    test_exception();
-    test_YNum();
-    test_stringUtils();
+    //test_exception();
+    //test_YNum();
+    //test_stringUtils();
     test_YVal();
 
     YType::terminate();
