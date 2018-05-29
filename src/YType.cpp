@@ -16,44 +16,51 @@ const char* YType::str_unsigned = "unsigned ";
 const char* YType::str_signed = "signed ";
 
 YType::pYType
-        YType::Char= nullptr,
-        YType::UChar= nullptr,
-        YType::Short= nullptr,
-        YType::UShort= nullptr,
-        YType::Int= nullptr,
-        YType::UInt= nullptr,
-        YType::Long= nullptr,
-        YType::ULong= nullptr,
-        YType::LongLong= nullptr,
-        YType::ULongLong= nullptr,
-        YType::Float= nullptr,
-        YType::Double= nullptr;
+        YType::Char = nullptr,
+        YType::UChar = nullptr,
+        YType::Short = nullptr,
+        YType::UShort = nullptr,
+        YType::Int = nullptr,
+        YType::UInt = nullptr,
+        YType::Long = nullptr,
+        YType::ULong = nullptr,
+        YType::LongLong = nullptr,
+        YType::ULongLong = nullptr,
+        YType::Float = nullptr,
+        YType::Double = nullptr,
+        YType::LongDouble = nullptr;
 
 
 YType* YType::add(const char* name, const int size, const BaseType baseType) {
-    YType* ptype = nullptr;
+    YType* pType = nullptr;
 
     if(baseType == cNum) {
-        ptype = new YNum;
-        ((YNum*) ptype)->bIsSigned = true;
-        ptype->name = name;
+        YNum* pNum = new YNum;
+        pNum->bIsSigned = true;
+        pNum->name = name;
 
         if(isFirstSubStr(name, str_unsigned)) {
-            ((YNum*) ptype)->bIsSigned = false;
+            pNum->bIsSigned = false;
         }
 
         //NOTE that "signed int" and "int" is same a type
         if(isFirstSubStr(name, str_signed)) {
-            ptype->name = ptype->name.c_str() + strlen(str_signed);
+            pNum->name = pNum->name.c_str() + strlen(str_signed);
         }
+
+        if(!(strcmp(name, "float") && strcmp(name, "double") && strcmp(name, "long double"))) {
+            pNum->bIsDecimal=true;
+        }
+
+        pType = (YType*) pNum;
     }
 
-    ptype->size = size;
-    ptype->baseType = baseType;
+    pType->size = size;
+    pType->baseType = baseType;
 
 
-    types.insert(ptype);
-    return ptype;
+    types.insert(pType);
+    return pType;
 }
 
 
@@ -98,6 +105,7 @@ void YType::init() {
 
     Float = YType::add("float", 4, YType::cNum);
     Double = YType::add("double", 8, YType::cNum);
+    LongDouble = YType::add("long double", 16, YType::cNum);
 }
 
 
@@ -110,6 +118,6 @@ void YType::terminate() {
 
 
 void YType::print() {
-    cout<<"(YType){name=\""<<name<<"\", size="<<size<<", baseType="<<baseType<<"}";
+    cout << "(YType){name=\"" << name << "\", size=" << size << ", baseType=" << baseType << "}";
 }
 

@@ -69,7 +69,7 @@ bool isFirstSubStr(const char* total, const char* substr) {
 }
 
 
-bool isLastSubStr(const char* total, const int total_len, const char* substr, int substr_len) {
+bool isLastSubStr(const char* total, const size_t total_len, const char* substr, const size_t substr_len) {
     for(int i = total_len - 1, j = substr_len - 1; j >= 0; i--, j--) {
         if(total[i] != substr[j])return false;
     }

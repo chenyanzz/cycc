@@ -15,10 +15,10 @@ class YType : CYCC {
 
 protected:
 
-    static set<YType *> types;
+    static set<YType*> types;
 
-    static const char *str_unsigned;
-    static const char *str_signed;
+    static const char* str_unsigned;
+    static const char* str_signed;
 
 
 public:
@@ -32,21 +32,21 @@ public:
     BaseType baseType;
 
 protected:
-    YType()= default;
+    YType() = default;
 
 public:
     typedef YType* pYType;
-    static pYType Char,UChar,Short,UShort,Int,UInt,Long,ULong,LongLong,ULongLong,Float,Double;
+    static pYType Char, UChar, Short, UShort, Int, UInt, Long, ULong, LongLong, ULongLong, Float, Double, LongDouble;
 
 public:
-    static YType *add(const char *name, const int size, const BaseType baseType);
+    static YType* add(const char* name, const int size, const BaseType baseType);
 
-    static YType *parse(const char *code);
+    static YType* parse(const char* code);
 
     static void init();
 
     static void terminate();
 
-    void print() override ;
+    void print() override;
 };
 

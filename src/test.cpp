@@ -12,7 +12,7 @@
 
 
 void test_YNum() {
-    cout << "******** test_YNum ********" << endl;
+    cout << endl <<"******** test_YNum ********" << endl;
 
     YNum* types[100];
     int i = 0;
@@ -45,7 +45,7 @@ void test_YNum() {
 
 
 void test_exception() {
-    cout << "******** test_exception ********" << endl;
+    cout << endl << "******** test_exception ********" << endl;
 
     YException("test %d %c %s", 233, 'z', "hia").print();
     YInvalidCharException("test test $", 10, "$ is illegal").print();
@@ -55,7 +55,7 @@ void test_exception() {
 
 
 void test_stringUtils() {
-    cout << "******** test_stringUtils ********" << endl;
+    cout << endl << "******** test_stringUtils ********" << endl;
 
     string s;
     bool b;
@@ -82,28 +82,27 @@ void test_stringUtils() {
 
 
 void test_YVal() {
-    cout << "******** test_YVal ********" << endl;
+    cout << endl << "******** test_YVal ********" << endl;
 
-    bool bSuccess;
-    //YVal::parseInt("12345")->print();
-    //puts("");
-    //YVal::parseInt("-12345")->print();
-    //puts("");
-    //YVal::parseInt("12345U")->print();
-    //puts("");
-    //YVal::parseInt("12345L")->print();
-    //puts("");
-    //YVal::parseInt("12345UL")->print();
-    //puts("");
-    //YVal::parseInt("12345ULL")->print();
-    //puts("");
-    //
-    //YVal::parseInt("0xabc")->print();
-    //puts("");
-    //YVal::parseInt("0b101")->print();
-    //puts("");
-    //YVal::parseInt("0377")->print();
-    //puts("");
+    YVal::parseInt("12345")->print();
+    puts("");
+    YVal::parseInt("-12345")->print();
+    puts("");
+    YVal::parseInt("12345U")->print();
+    puts("");
+    YVal::parseInt("12345L")->print();
+    puts("");
+    YVal::parseInt("12345UL")->print();
+    puts("");
+    YVal::parseInt("12345ULL")->print();
+    puts("");
+
+    YVal::parseInt("0xabc")->print();
+    puts("");
+    YVal::parseInt("0b101")->print();
+    puts("");
+    YVal::parseInt("0377")->print();
+    puts("");
 
     try {
         YVal::parseInt("12345UU")->print();
@@ -134,6 +133,12 @@ void test_YVal() {
     } catch(YException& e) {
         e.print();
     }
+    YVal::parseDecimal(".123")->print();
+    puts("");
+    YVal::parseDecimal("0.123")->print();
+    puts("");
+    YVal::parseDecimal("1.123")->print();
+    puts("");
 }
 
 
