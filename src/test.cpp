@@ -140,9 +140,9 @@ void test_YVal() {
 void doTests() {
     YType::init();
 
-    //test_exception();
-    //test_YNum();
-    //test_stringUtils();
+    test_exception();
+    test_YNum();
+    test_stringUtils();
     test_YVal();
 
     YType::terminate();
