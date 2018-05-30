@@ -7,31 +7,36 @@
  */
 
 
-#include "common.h"
-#include <exception>
-#include "stdarg.h"
+#include <string>
+#include "define.h"
 #include "CYCC.h"
 
-class YException : exception {
+class YException : CYCC {
 protected:
-    string err_str;
+    std::string err_str;
 
 public:
+    const char* className() const override;
+
     YException(const char* pc_err_str, ...);
-
     const char* what();
-
-    void print();
+    void print() override;
 };
 
 class YInvalidCharException : public YException {
 public:
+    const char* className() const override;
+
+
     YInvalidCharException(const char* src, int pos, const char* msg)
-            : YException("[YInvalidCharException]: %s\n%s\n%*s", msg, src, pos+1, "^") {};
+            : YException("%s\n%s\n%*s", msg, src, pos + 1, "^") {};
 };
 
 class YNoSuchTypeException : public YException {
 public:
+    const char* className() const override;
+
+
     YNoSuchTypeException(const char* type)
-            : YException("[YNoSuchTypeException]: can't find the type \"%s\"", type) {};
+            : YException("can't find the type \"%s\"", type) {};
 };

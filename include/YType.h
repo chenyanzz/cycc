@@ -7,22 +7,23 @@
 
 #pragma once
 
+#include <set>
+#include <string>
 #include "CYCC.h"
-#include "common.h"
-
+#include "define.h"
 
 class YType : CYCC {
 
 protected:
 
-    static set<YType*> types;
+    static std::set<YType*> types;
 
     static const char* str_unsigned;
     static const char* str_signed;
 
 
 public:
-    string name;
+    std::string name;
     int size;
 
     enum BaseType {
@@ -47,6 +48,7 @@ public:
 
     static void terminate();
 
+    const char* className() const override;
     void print() override;
 };
 

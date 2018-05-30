@@ -18,6 +18,7 @@ public:
     bool bIsDecimal:1;//true if type is float or double
 
     void print() override;
+    const char* className() const override;
 
     friend class YType;
 };

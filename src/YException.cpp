@@ -2,13 +2,23 @@
  * Created by cy on 2018/5/26.
  */
 
-#include "YException.h"
 #include <cstdio>
 #include <iostream>
+#include <cstdarg>
+#include "YException.h"
 
 using namespace std;
 
 static char buf[100];
+
+
+const char* YException::className() const { return "YException"; }
+
+
+const char* YInvalidCharException::className() const { return "YInvalidCharException"; }
+
+
+const char* YNoSuchTypeException::className() const { return "YNoSuchTypeException"; }
 
 
 YException::YException(const char* pc_err_str, ...) {
@@ -17,7 +27,7 @@ YException::YException(const char* pc_err_str, ...) {
 
     vsprintf(buf, pc_err_str, vl);
     err_str = buf;
-    err_str += '\n';
+
     va_end(vl);
 };
 
@@ -28,6 +38,6 @@ const char* YException::what() {
 
 
 void YException::print() {
-    cout<<this->what()<<endl;
+    cout << endl << "[" << className() << "] encountered:" << endl;
+    cout << this->what() << endl << endl;
 }
-

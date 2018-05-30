@@ -15,7 +15,10 @@ class YEpxression : CYCC {
 public:
     static YEpxression *parse(char *expr);
 
-    YVal exec();
+    YVal* exec();
+
+    void print() override;
+    const char* className() const override;
 };
 
 

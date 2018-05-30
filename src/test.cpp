@@ -2,10 +2,10 @@
  * Created by cy on 2018/5/26.
  */
 #include <iostream>
-#include <YVal.h>
+#include "YException.h"
+#include "YVal.h"
 #include "test.h"
-
-#include "common.h"
+#include "define.h"
 #include "YType.h"
 #include "YNum.h"
 #include "stringUtils.h"
@@ -83,62 +83,70 @@ void test_stringUtils() {
 
 void test_YVal() {
     cout << endl << "******** test_YVal ********" << endl;
-
-    YVal::parseInt("12345")->print();
-    puts("");
-    YVal::parseInt("-12345")->print();
-    puts("");
-    YVal::parseInt("12345U")->print();
-    puts("");
-    YVal::parseInt("12345L")->print();
-    puts("");
-    YVal::parseInt("12345UL")->print();
-    puts("");
-    YVal::parseInt("12345ULL")->print();
-    puts("");
-
-    YVal::parseInt("0xabc")->print();
-    puts("");
-    YVal::parseInt("0b101")->print();
-    puts("");
-    YVal::parseInt("0377")->print();
-    puts("");
+    //
+    //YVal::parseInt("12345")->print();
+    //puts("");
+    //YVal::parseInt("-12345")->print();
+    //puts("");
+    //YVal::parseInt("12345U")->print();
+    //puts("");
+    //YVal::parseInt("12345L")->print();
+    //puts("");
+    //YVal::parseInt("12345UL")->print();
+    //puts("");
+    //YVal::parseInt("12345ULL")->print();
+    //puts("");
+    //
+    //YVal::parseInt("0xabc")->print();
+    //puts("");
+    //YVal::parseInt("0b101")->print();
+    //puts("");
+    //YVal::parseInt("0377")->print();
+    //puts("");
+    //
+    //YVal::parseDecimal(".123")->print();
+    //puts("");
+    //YVal::parseDecimal("0.123")->print();
+    //puts("");
+    //YVal::parseDecimal("1.123")->print();
+    //puts("");
+    //
+    //try {
+    //    YVal::parseInt("12345UU")->print();
+    //} catch(YException& e) {
+    //    e.print();
+    //}
+    //
+    //try {
+    //    YVal::parseInt("abc")->print();
+    //} catch(YException& e) {
+    //    e.print();
+    //}
+    //
+    //try {
+    //    YVal::parseInt("0xAzz")->print();
+    //} catch(YException& e) {
+    //    e.print();
+    //}
+    //
+    //try {
+    //    YVal::parseInt("0999")->print();
+    //} catch(YException& e) {
+    //    e.print();
+    //}
+    //
+    //try {
+    //    YVal::parseInt("$$%**")->print();
+    //} catch(YException& e) {
+    //    e.print();
+    //}
 
     try {
-        YVal::parseInt("12345UU")->print();
+        YVal::parseDecimal("1.abc")->print();
     } catch(YException& e) {
         e.print();
     }
 
-    try {
-        YVal::parseInt("abc")->print();
-    } catch(YException& e) {
-        e.print();
-    }
-
-    try {
-        YVal::parseInt("0xAzz")->print();
-    } catch(YException& e) {
-        e.print();
-    }
-
-    try {
-        YVal::parseInt("0999")->print();
-    } catch(YException& e) {
-        e.print();
-    }
-
-    try {
-        YVal::parseInt("$$%**")->print();
-    } catch(YException& e) {
-        e.print();
-    }
-    YVal::parseDecimal(".123")->print();
-    puts("");
-    YVal::parseDecimal("0.123")->print();
-    puts("");
-    YVal::parseDecimal("1.123")->print();
-    puts("");
 }
 
 

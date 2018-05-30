@@ -10,9 +10,9 @@
 
 class YVal : CYCC {
 public:
-    static YVal parse(char* s);
-
-    void print() override ;
+    void print() override;
+    const char* className() const override;
+    static YVal* parse(char* s);
 
     ~YVal();
 
@@ -21,12 +21,10 @@ protected:
     void* pdata;
 
     static YVal* parseInt(const char* s);
-
     static YVal* parseDecimal(const char* s);
 
-    friend void test_YVal();//for debug
-
     YVal() = default;
+    friend void test_YVal();//for debug
 };
 
 

@@ -6,8 +6,13 @@
 
 #pragma once
 
-#include "common.h"
+#include <iostream>
+#include "define.h"
 
 class CYCC {
+public:
+    virtual const char* className() const =0;
+
+
     virtual void print()=0;
 };

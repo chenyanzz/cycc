@@ -5,10 +5,21 @@
 #include "YExpression.h"
 
 
-YEpxression *YEpxression::parse(char* expr) {
+const char* YEpxression::className() const {
+    return "YEpxression";
+}
+
+
+YEpxression* YEpxression::parse(char* expr) {
 
 }
 
-YVal YEpxression::exec() {
+
+YVal* YEpxression::exec() {
+
+}
+
+
+void YEpxression::print() {
 
 }

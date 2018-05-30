@@ -3,11 +3,22 @@
  */
 
 #include <iostream>
-#include <YNum.h>
+#include <cmath>
+#include <cstring>
+#include "YNum.h"
 #include "YVal.h"
+#include "YException.h"
+#include "stringUtils.h"
+
+using namespace std;
 
 
-YVal YVal::parse(char* s) {
+const char* YVal::className() const {
+    return "YVal";
+}
+
+
+YVal* YVal::parse(char* s) {
 
 }
 
@@ -25,7 +36,7 @@ YVal* YVal::parseInt(const char* __s) {
     //for int val
 
     int radix = 10;
-    const int buf_size = 100;
+    const size_t buf_size = 100;
     static char buf[buf_size];
     strcpy_s(buf, buf_size, __s);
     char* pc_num = buf;
@@ -68,17 +79,16 @@ YVal* YVal::parseInt(const char* __s) {
                 radix = 8;
                 break;
 
-            case 0:
-            {
+            case 0: {
                 YVal* pVal = new YVal;
-                pVal->ptype=YType::Int;
-                pVal->pdata=new int(0);
+                pVal->ptype = YType::Int;
+                pVal->pdata = new int(0);
                 return pVal;
             }
 
             default:
 
-                throw (YException) YInvalidCharException(buf, pc_num - buf, "illegal char in a number prefix");
+                throw YInvalidCharException(__s, pc_num - buf, "illegal char in a number prefix");
         }
     }
 
@@ -86,7 +96,8 @@ YVal* YVal::parseInt(const char* __s) {
 
     YType* ptype;
     void* pdata;
-    int len = (int) strlen(pc_num);
+    size_t len = min(strlen(pc_num), buf_size - (pc_num - buf));
+
     if(isLastSubStr(pc_num, len, "ULL", 3) || isLastSubStr(pc_num, len, "ull", 3)) {
         len -= 3;
         ptype = YType::ULongLong;
@@ -97,7 +108,7 @@ YVal* YVal::parseInt(const char* __s) {
         len -= 2;
         ptype = YType::LongLong;
     } else if(isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
-        throw (YException) YInvalidCharException(buf, len - 1, "suffix \"UU\" is illegal");
+        throw YInvalidCharException(__s, len - 1, "suffix \"UU\" is illegal");
 
     } else if(isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
         len--;
@@ -113,7 +124,7 @@ YVal* YVal::parseInt(const char* __s) {
 
     unsigned long long num = 0;
     for(char* org_p = pc_num; pc_num - org_p < len; pc_num++) {
-        char hexletter = (*pc_num | 0x20);
+        char hexletter = (*pc_num | (char) 0x20);
         int bitval;
 
         if(*pc_num >= '0' && *pc_num <= '9') {
@@ -121,11 +132,11 @@ YVal* YVal::parseInt(const char* __s) {
         } else if(hexletter >= 'a' && hexletter <= 'f') {
             bitval = hexletter - 'a' + 10;
         } else {
-            throw (YException) YInvalidCharException(buf, pc_num - buf, "illegal char in a number body");
+            throw YInvalidCharException(__s, pc_num - buf, "illegal char in a number body");
         }
 
         if(bitval >= radix) {
-            throw (YException) YInvalidCharException(buf, pc_num - buf, "illegal char in a number body");
+            throw YInvalidCharException(__s, pc_num - buf, "illegal char in a number body");
         }
 
         num *= radix;
@@ -162,19 +173,35 @@ YVal* YVal::parseInt(const char* __s) {
 
 YVal::~YVal() {
     if(ptype->baseType == YType::cNum) {
-        switch(ptype->size) {
-            case 1:
-                delete (unsigned char*) pdata;
-                break;
-            case 2:
-                delete (unsigned short*) pdata;
-                break;
-            case 4:
-                delete (unsigned int*) pdata;
-                break;
-            case 8:
-                delete (unsigned long long*) pdata;
-                break;
+        YNum* pNum = (YNum*) ptype;
+
+        if(pNum->bIsDecimal) {
+            switch(ptype->size) {
+                case 4:
+                    delete (float*) pdata;
+                    break;
+                case 8:
+                    delete (double*) pdata;
+                    break;
+                case 16:
+                    delete (long double*) pdata;
+                    break;
+            }
+        } else {    //integer
+            switch(ptype->size) {
+                case 1:
+                    delete (char*) pdata;
+                    break;
+                case 2:
+                    delete (short*) pdata;
+                    break;
+                case 4:
+                    delete (int*) pdata;
+                    break;
+                case 8:
+                    delete (long long*) pdata;
+                    break;
+            }
         }
     }
 }
@@ -196,7 +223,7 @@ void YVal::print() {
                     cout << *(long double*) pdata;
                     break;
             }
-            cout<<", type=";
+            cout << ", type=";
             ptype->print();
             cout << "}";
         } else {
@@ -215,7 +242,7 @@ void YVal::print() {
                     cout << hex << *(unsigned long long*) pdata;
                     break;
             }
-            cout<<", type=";
+            cout << ", type=";
             ptype->print();
             cout << "}";
         }
@@ -223,12 +250,16 @@ void YVal::print() {
 }
 
 
-YVal* YVal::parseDecimal(const char* s) {
-    const int buf_size = 100;
+YVal* YVal::parseDecimal(const char* __s) {
+    if(!strcmp(__s, ".")) {
+        throw YException("[YException] \"%s\" is not a proper decimal", __s);
+    }
+
+    const size_t buf_size = 100;
     static char buf[buf_size];
-    strcpy_s(buf, buf_size, s);
+    strcpy_s(buf, buf_size, __s);
     char* pc_num = buf;
-    size_t len = strlen(s);
+    size_t len = min(strlen(__s), buf_size);
 
     bool bNegative = false;
     char* pc_dot = pc_num;
@@ -249,7 +280,7 @@ YVal* YVal::parseDecimal(const char* s) {
        isLastSubStr(pc_num, len, "LL", 2) || isLastSubStr(pc_num, len, "ll", 2) ||
        isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2) ||
        isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
-        throw (YException) YInvalidCharException(buf, len - 1, "the suffix is illegal for decimal");
+        throw YInvalidCharException(__s, len - 1, "the suffix is illegal for decimal");
     }
 
     ptype = YType::Double;
@@ -266,7 +297,7 @@ YVal* YVal::parseDecimal(const char* s) {
 
     while(*pc_dot != '.') {
         if(*pc_dot == 0) {
-            throw (YException) YException("[YException] \"%s\" is not a proper decimal", s);
+            throw YException("[YException] \"%s\" is not a proper decimal", buf);
         }
         pc_dot++;
     }
@@ -283,7 +314,7 @@ YVal* YVal::parseDecimal(const char* s) {
             dec_val += *pc - '0';
             dec_val /= 10;
         } else {
-            throw (YException) YInvalidCharException(buf, pc - buf, "illegal char in a number body");
+            throw YInvalidCharException(__s, pc - buf, "illegal char in a number body");
         }
     }
 

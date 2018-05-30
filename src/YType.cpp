@@ -3,11 +3,15 @@
  */
 
 #include <iostream>
+#include <cstring>
+#include "YException.h"
 #include "stringUtils.h"
 #include "YType.h"
 #include "YNum.h"
+#include "define.h"
 
-#include "common.h"
+using namespace std;
+
 
 set<YType*> YType::types;
 
@@ -49,7 +53,7 @@ YType* YType::add(const char* name, const int size, const BaseType baseType) {
         }
 
         if(!(strcmp(name, "float") && strcmp(name, "double") && strcmp(name, "long double"))) {
-            pNum->bIsDecimal=true;
+            pNum->bIsDecimal = true;
         }
 
         pType = (YType*) pNum;
@@ -74,12 +78,12 @@ YType* YType::parse(const char* code) {
 
     auto it = cyfind_if(types, [=](YType* pt) -> bool { pt->name == str_type; });
     if(it == types.end()) {
-        throw (YException) YNoSuchTypeException(code);
+        throw YNoSuchTypeException(code);
     }
 
     if(isSigned) {
         if((*it)->baseType != cNum) {
-            throw (YException) YNoSuchTypeException(code);
+            throw YNoSuchTypeException(code);
         }
     }
 
@@ -118,6 +122,10 @@ void YType::terminate() {
 
 
 void YType::print() {
-    cout << "(YType){name=\"" << name << "\", size=" << size << ", baseType=" << baseType << "}";
+    cout << "(" << className() << "){name=\"" << name << "\", size=" << size << ", baseType=" << baseType << "}";
 }
 
+
+const char* YType::className() const {
+    return "YType";
+}
