@@ -9,6 +9,9 @@ const char* YEpxression::className() const {
     return "YEpxression";
 }
 
+void YEpxression::print() {
+
+}
 
 YEpxression* YEpxression::parse(char* expr) {
 
@@ -20,6 +23,3 @@ YVal* YEpxression::exec() {
 }
 
 
-void YEpxression::print() {
-
-}

@@ -18,6 +18,49 @@ const char* YVal::className() const {
 }
 
 
+void YVal::print() {
+    if(ptype->baseType == YType::cNum) {
+        YNum* pNum = (YNum*) ptype;
+        if(pNum->bIsDecimal) {
+            cout << "(YVal){num=";
+            switch(ptype->size) {
+                case 4:
+                    cout << *(float*) pdata;
+                    break;
+                case 8:
+                    cout << *(double*) pdata;
+                    break;
+                case 16:
+                    cout << *(long double*) pdata;
+                    break;
+            }
+            cout << ", type=";
+            ptype->print();
+            cout << "}";
+        } else {
+            cout << "(YVal){data=0x";
+            switch(ptype->size) {
+                case 1:
+                    cout << hex << *(unsigned char*) pdata;
+                    break;
+                case 2:
+                    cout << hex << *(unsigned short*) pdata;
+                    break;
+                case 4:
+                    cout << hex << *(unsigned int*) pdata;
+                    break;
+                case 8:
+                    cout << hex << *(unsigned long long*) pdata;
+                    break;
+            }
+            cout << ", type=";
+            ptype->print();
+            cout << "}";
+        }
+    }
+}
+
+
 YVal* YVal::parse(char* s) {
 
 }
@@ -172,6 +215,7 @@ YVal* YVal::parseInt(const char* __s) {
 
 
 YVal::~YVal() {
+    if(pdata== nullptr)return;
     if(ptype->baseType == YType::cNum) {
         YNum* pNum = (YNum*) ptype;
 
@@ -204,51 +248,9 @@ YVal::~YVal() {
             }
         }
     }
+
+    pdata = nullptr;
 }
-
-
-void YVal::print() {
-    if(ptype->baseType == YType::cNum) {
-        YNum* pNum = (YNum*) ptype;
-        if(pNum->bIsDecimal) {
-            cout << "(YVal){num=";
-            switch(ptype->size) {
-                case 4:
-                    cout << *(float*) pdata;
-                    break;
-                case 8:
-                    cout << *(double*) pdata;
-                    break;
-                case 16:
-                    cout << *(long double*) pdata;
-                    break;
-            }
-            cout << ", type=";
-            ptype->print();
-            cout << "}";
-        } else {
-            cout << "(YVal){data=0x";
-            switch(ptype->size) {
-                case 1:
-                    cout << hex << *(unsigned char*) pdata;
-                    break;
-                case 2:
-                    cout << hex << *(unsigned short*) pdata;
-                    break;
-                case 4:
-                    cout << hex << *(unsigned int*) pdata;
-                    break;
-                case 8:
-                    cout << hex << *(unsigned long long*) pdata;
-                    break;
-            }
-            cout << ", type=";
-            ptype->print();
-            cout << "}";
-        }
-    }
-}
-
 
 YVal* YVal::parseDecimal(const char* __s) {
     if(!strcmp(__s, ".")) {
