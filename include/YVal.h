@@ -16,24 +16,23 @@ public:
     const char* className() const override;
     static YVal* parse(char* s);
 
-    //to clone a val
-    //NOT IMPLEMENTED
-    YVal(YVal* pVal);
-    YVal(YVal* pVal,YType* pNewType);
+
+    YVal* clone();
+    YVal* castTo(YType* pNewType);
 
     ~YVal();
 
 protected:
     YType* ptype;//ptype is destroyed when going out of scope.
-    void* pdata;
+    byte* pdata;
 
     static YVal* parseInt(const char* s);
     static YVal* parseDecimal(const char* s);
 
     YVal() : ptype(nullptr), pdata(nullptr) {};
 
-
-    YVal(YType* type, void* data) : ptype(type), pdata(data) {};
+    YVal(YType* ptype,void* pdata);
+    YVal(YVal* pVal);
 
     friend void test_YVal();//for debug
 };

@@ -72,7 +72,8 @@ YVal* YVal::parseInt(const char* __s) {
     if(__s[0] == '\'' && __s[2] == '\'') {
         YVal* pval = new YVal;
         pval->ptype = YType::Char;
-        pval->pdata = new char(__s[1]);
+        pval->pdata = new byte[pval->ptype->size];
+        *(char*) pval->pdata = __s[1];
         return pval;
     }
 
@@ -125,7 +126,8 @@ YVal* YVal::parseInt(const char* __s) {
             case 0: {
                 YVal* pVal = new YVal;
                 pVal->ptype = YType::Int;
-                pVal->pdata = new int(0);
+                pVal->pdata = new byte[pVal->ptype->size];
+                *(int*) pVal->pdata = 0;
                 return pVal;
             }
 
@@ -192,65 +194,37 @@ YVal* YVal::parseInt(const char* __s) {
     if(bNegative) {
         num = ~(num & ~(1 << (sizeof(num) - 1))) + 1;
     }
-    YVal* pval = new YVal;
-    pval->ptype = ptype;
+    YVal* pVal = new YVal;
+    pVal->ptype = ptype;
+    pVal->pdata = new byte[pVal->ptype->size];
 
     switch(ptype->size) {
         case 1:
-            pval->pdata = new unsigned char(num);
+            *(unsigned char*) pVal->pdata = num;
             break;
         case 2:
-            pval->pdata = new unsigned short(num);
+            *(unsigned short*) pVal->pdata = num;
             break;
         case 4:
-            pval->pdata = new unsigned int(num);
+            *(unsigned int*) pVal->pdata = num;
             break;
         case 8:
-            pval->pdata = new unsigned long long(num);
+            *(unsigned long long*) pVal->pdata = num;
             break;
     }
 
-    return pval;
+    return pVal;
 }
 
 
 YVal::~YVal() {
-    if(pdata== nullptr)return;
-    if(ptype->baseType == YType::cNum) {
-        YNum* pNum = (YNum*) ptype;
+    if(pdata == nullptr)return;
 
-        if(pNum->bIsDecimal) {
-            switch(ptype->size) {
-                case 4:
-                    delete (float*) pdata;
-                    break;
-                case 8:
-                    delete (double*) pdata;
-                    break;
-                case 16:
-                    delete (long double*) pdata;
-                    break;
-            }
-        } else {    //integer
-            switch(ptype->size) {
-                case 1:
-                    delete (char*) pdata;
-                    break;
-                case 2:
-                    delete (short*) pdata;
-                    break;
-                case 4:
-                    delete (int*) pdata;
-                    break;
-                case 8:
-                    delete (long long*) pdata;
-                    break;
-            }
-        }
-    }
+    delete[] pdata;
 
     pdata = nullptr;
 }
+
 
 YVal* YVal::parseDecimal(const char* __s) {
     if(!strcmp(__s, ".")) {
@@ -280,8 +254,7 @@ YVal* YVal::parseDecimal(const char* __s) {
     if(isLastSubStr(pc_num, len, "ULL", 3) || isLastSubStr(pc_num, len, "ull", 3) ||
        isLastSubStr(pc_num, len, "UL", 2) || isLastSubStr(pc_num, len, "ul", 2) ||
        isLastSubStr(pc_num, len, "LL", 2) || isLastSubStr(pc_num, len, "ll", 2) ||
-       isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2) ||
-       isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
+       isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
         throw YInvalidCharException(__s, len - 1, "the suffix is illegal for decimal");
     }
 
@@ -321,18 +294,161 @@ YVal* YVal::parseDecimal(const char* __s) {
     }
 
     long double val = dec_val + int_val;
-    YVal* pval = new YVal;
-    pval->ptype = ptype;
+    YVal* pVal = new YVal;
+    pVal->ptype = ptype;
+    pVal->pdata = new byte[pVal->ptype->size];
 
     switch(ptype->size) {
         case 4:
-            pval->pdata = new float(val);
+            *(float*) pVal->pdata = val;
             break;
         case 8:
-            pval->pdata = new double(val);
+            *(double*) pVal->pdata = val;
             break;
         case 16:
-            pval->pdata = new long double(val);
+            *(long double*) pVal->pdata = val;
             break;
     }
+}
+
+
+YVal* YVal::castTo(YType* pNewType) {
+    YType* pOldType = ptype;
+    byte* pOldData = pdata;
+
+    //the cases without a memory-change:
+    //anyone is not a number
+    //or both are int's
+    if(
+            pNewType->baseType != YType::cNum ||
+            pOldType->baseType != YType::cNum ||
+            (!((YNum*) pOldType)->bIsDecimal && !((YNum*) pNewType)->bIsDecimal)
+            ) {
+        return new YVal(pNewType, pOldData);
+    }
+
+    //deal with the cast between int and decimal
+    YVal* pNewVal = new YVal;
+    pNewVal->ptype = pNewType;
+
+    if(pNewType->baseType == YType::cNum) {
+        YNum* pOldNum = (YNum*) pOldType;
+        YNum* pNewNum = (YNum*) pNewType;
+
+        if(pOldNum->bIsDecimal && pNewNum->bIsDecimal) {
+            //from int to dec
+            long double oldval;
+            switch(pOldType->size) {
+                case 4:
+                    oldval = *(float*) pOldData;
+                    break;
+                case 8:
+                    oldval = *(double*) pOldData;
+                    break;
+                case 16:
+                    oldval = *(long double*) pOldData;
+                    break;
+            }
+
+            void* p;
+            switch(pNewType->size) {
+                case 4: {
+                    p = (float*) new byte[YType::Float->size];
+                    *(float*) p = oldval;
+                    break;
+                }
+                case 8: {
+                    p = (double*) new byte[YType::Double->size];
+                    *(double*) p = oldval;
+                    break;
+                }
+                case 16: {
+                    p = (long double*) new byte[YType::LongDouble->size];
+                    *(long double*) p = oldval;
+                    break;
+                }
+
+            }
+            pNewVal->pdata = (byte*) p;
+        } else if(pOldNum->bIsDecimal) {
+            //from dec to int
+            long long* pll = (long long*) new byte[YType::LongLong->size];
+            switch(pOldType->size) {
+                case 4:
+                    *pll = *(float*) pOldData;
+                    break;
+                case 8:
+                    *pll = *(double*) pOldData;
+                    break;
+                case 16:
+                    *pll = *(long double*) pOldData;
+                    break;
+            }
+            pNewVal->pdata = (byte*) pll;
+        } else {
+            //from int to dec
+            long long oldval;
+            switch(pOldType->size) {
+                case 1:
+                    oldval = *(unsigned char*) pOldData;
+                    break;
+                case 2:
+                    oldval = *(unsigned short*) pOldData;
+                    break;
+                case 4:
+                    oldval = *(unsigned int*) pOldData;
+                    break;
+                case 8:
+                    oldval = *(unsigned long long*) pOldData;
+                    break;
+            }
+
+            void* p;
+            switch(pNewType->size) {
+                case 4: {
+                    p = (float*) new byte[YType::Float->size];
+                    *(float*) p = oldval;
+                    break;
+                }
+                case 8: {
+                    p = (double*) new byte[YType::Double->size];
+                    *(double*) p = oldval;
+                    break;
+                }
+                case 16: {
+                    p = (long double*) new byte[YType::LongDouble->size];
+                    *(long double*) p = oldval;
+                    break;
+                }
+
+            }
+            pNewVal->pdata = (byte*) p;
+        }
+    }
+
+    return pNewVal;
+
+}
+
+
+YVal* YVal::clone() {
+    return new YVal(this);
+}
+
+
+YVal::YVal(YType* ptype, void* pdata) {
+    this->ptype = ptype;
+    this->pdata = new byte[this->ptype->size];
+
+    memset(this->pdata, 0, this->ptype->size);
+    memcpy(this->pdata, pdata, min(this->ptype->size, ptype->size));
+}
+
+
+YVal::YVal(YVal* pVal) {
+    this->ptype = pVal->ptype;
+    this->pdata = new byte[this->ptype->size];
+
+    memset(this->pdata, 0, this->ptype->size);
+    memcpy(this->pdata, pVal->pdata, min(this->ptype->size, ptype->size));
 }

@@ -10,3 +10,5 @@
 
 #define cyfind(vec, item) (std::find(vec.begin(),vec.end(),item))
 #define cyfind_if(vec, comp) (std::find_if(vec.begin(),vec.end(),comp))
+
+typedef char byte;

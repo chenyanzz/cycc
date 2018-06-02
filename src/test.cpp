@@ -146,9 +146,17 @@ void test_YVal() {
     } catch(YException& e) {
         e.print();
     }
+
+    YVal* p = YVal::parseDecimal("123.456");
+    p->clone()->print();
+    puts("");
+    p->castTo(YType::Float)->print();
+    puts("");
+    p->castTo(YType::LongDouble)->print();
+    puts("");
+    p->castTo(YType::Int)->print();
+    puts("");
 }
-
-
 
 
 void doTests() {

@@ -24,7 +24,7 @@ protected:
 
 public:
     std::string name;
-    int size;
+    size_t size;
 
     enum BaseType {
         cNum, cPtr, cStruct, cEnum
