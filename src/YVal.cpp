@@ -62,7 +62,10 @@ void YVal::print() {
 
 
 YVal* YVal::parse(char* s) {
+    try { return parseDecimal(s); } catch(YParseFailedException& e) {}
+    try { return parseInt(s); } catch(YParseFailedException& e) {}
 
+    throw YParseFailedException("YVal",s,"not a proper literal");
 }
 
 
@@ -221,7 +224,6 @@ YVal::~YVal() {
     if(pdata == nullptr)return;
 
     delete[] pdata;
-
     pdata = nullptr;
 }
 
@@ -445,10 +447,4 @@ YVal::YVal(YType* ptype, void* pdata) {
 }
 
 
-YVal::YVal(YVal* pVal) {
-    this->ptype = pVal->ptype;
-    this->pdata = new byte[this->ptype->size];
-
-    memset(this->pdata, 0, this->ptype->size);
-    memcpy(this->pdata, pVal->pdata, min(this->ptype->size, ptype->size));
-}
+YVal::YVal(YVal* pVal) : YVal(pVal->ptype, pVal->pdata) {}

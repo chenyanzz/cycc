@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include "define.h"
-#include "test.h"
+#include "../test.h"
 #include "YException.h"
 
 using namespace std;

@@ -27,16 +27,17 @@ class YInvalidCharException : public YException {
 public:
     const char* className() const override;
 
-
-    YInvalidCharException(const char* src, int pos, const char* msg)
-            : YException("%s\n%s\n%*s", msg, src, pos + 1, "^") {};
+    YInvalidCharException(const char* src, int pos, const char* msg);
 };
 
 class YNoSuchTypeException : public YException {
 public:
     const char* className() const override;
+    YNoSuchTypeException(const char* type);
+};
 
-
-    YNoSuchTypeException(const char* type)
-            : YException("can't find the type \"%s\"", type) {};
+class YParseFailedException : public YException {
+public:
+    const char* className() const override;
+    YParseFailedException(const char* clazz, const char* s, const char* msg);
 };

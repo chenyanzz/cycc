@@ -14,33 +14,18 @@
 void test_YNum() {
     cout << endl << "******** test_YNum ********" << endl;
 
-    YNum* types[100];
-    int i = 0;
-
-    YType::parse("int")->print();
+    YType::get("int")->print();
     puts("");
     YType::UChar->print();
     puts("");
-    YType::parse("unsigned long long")->print();
+    YType::get("unsigned long long")->print();
     puts("");
-    YType::parse("signed short")->print();
+    YType::get("signed short")->print();
     puts("");
 
-    try {
-        types[i++] = (YNum*) YType::parse("hia int");
-    } catch(YException& e) {
-        e.print();
-    }
-    try {
-        types[i++] = (YNum*) YType::parse("int hia");
-    } catch(YException& e) {
-        e.print();
-    }
-    try {
-        types[i++] = (YNum*) YType::parse("hiahia");
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YType::get("hia int")->print(); } catch(YException& e) { e.print(); }
+    try { YType::get("int hia")->print(); } catch(YException& e) { e.print(); }
+    try { YType::get("hiahia")->print(); } catch(YException& e) { e.print(); }
 }
 
 
@@ -50,7 +35,7 @@ void test_exception() {
     YException("test %d %c %s", 233, 'z', "hia").print();
     YInvalidCharException("test test $", 10, "$ is illegal").print();
     YNoSuchTypeException("haha").print();
-
+    YParseFailedException("-test-","hia@@@","anyway It failed").print();
 }
 
 
@@ -77,7 +62,6 @@ void test_stringUtils() {
     b = isLastSubStr("abcde", 5, "de", 2);
     cout << b << " ";
     cout << endl;
-    b;
 }
 
 
@@ -111,41 +95,17 @@ void test_YVal() {
     YVal::parseDecimal("1.123")->print();
     puts("");
 
-    try {
-        YVal::parseInt("12345UU")->print();
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YVal::parseInt("12345UU")->print(); } catch(YException& e) { e.print(); }
 
-    try {
-        YVal::parseInt("abc")->print();
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YVal::parseInt("abc")->print(); } catch(YException& e) { e.print(); }
 
-    try {
-        YVal::parseInt("0xAzz")->print();
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YVal::parseInt("0xAzz")->print(); } catch(YException& e) { e.print(); }
 
-    try {
-        YVal::parseInt("0999")->print();
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YVal::parseInt("0999")->print(); } catch(YException& e) { e.print(); }
 
-    try {
-        YVal::parseInt("$$%**")->print();
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YVal::parseInt("$$%**")->print(); } catch(YException& e) { e.print(); }
 
-    try {
-        YVal::parseDecimal("1.abc")->print();
-    } catch(YException& e) {
-        e.print();
-    }
+    try { YVal::parseDecimal("1.abc")->print(); } catch(YException& e) { e.print(); }
 
     YVal* p = YVal::parseDecimal("123.456");
     p->clone()->print();

@@ -13,6 +13,5 @@ class CYCC {
 public:
     virtual const char* className() const =0;
 
-
     virtual void print()=0;
 };

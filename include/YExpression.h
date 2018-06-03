@@ -10,10 +10,10 @@
 #include "CYCC.h"
 #include "YVal.h"
 
-class YEpxression : CYCC {
+class YExpression : CYCC {
 
 public:
-    static YEpxression *parse(char *expr);
+    static YExpression *parse(char *expr);
 
     YVal* exec();
 

@@ -42,7 +42,7 @@ public:
 public:
     static YType* add(const char* name, const int size, const BaseType baseType);
 
-    static YType* parse(const char* code);
+    static YType* get(const char* code);
 
     static void init();
 

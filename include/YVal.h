@@ -9,13 +9,13 @@
  */
 
 #include "YType.h"
+#include "YException.h"
 
 class YVal : CYCC {
 public:
     void print() override;
     const char* className() const override;
     static YVal* parse(char* s);
-
 
     YVal* clone();
     YVal* castTo(YType* pNewType);

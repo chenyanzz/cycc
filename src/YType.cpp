@@ -68,7 +68,7 @@ YType* YType::add(const char* name, const int size, const BaseType baseType) {
 }
 
 
-YType* YType::parse(const char* code) {
+YType* YType::get(const char* code) {
 
     string str_type = code;
     bool isSigned = isFirstSubStr(code, str_signed);
