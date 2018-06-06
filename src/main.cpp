@@ -1,24 +1,22 @@
 
 #include <string>
+#include <iostream>
 #include <vector>
-#include "define.h"
+#include "common.h"
 #include "../test.h"
 #include "YException.h"
 
 using namespace std;
 
-const vector<string> cycc_seperators = {";", "{", "}", "(", ")", " ", "\n"};
+const vector<string> cycc_seperators = { ";", "{", "}", "(", ")", " ", "\n" };
 
 int main() {
-    const char *code = "int i=10;";
+	const char *code = "int i=10;";
 
-    try {
-        doTests();
-    } catch (YException& e) {
-        e.print();
-        return -1;
-    }
+	doTests();
 
+	cout << endl<<endl<<"[[[[[end]]]]]" << endl;
+	while (true);
 
-    return 0;
+	return 0;
 }

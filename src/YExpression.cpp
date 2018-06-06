@@ -13,13 +13,12 @@ void YExpression::print() {
 
 }
 
-YExpression* YExpression::parse(char* expr) {
-
+bool YExpression::parse(const char* s,YExpression* pExp) {
+	return nullptr;
 }
 
-
 YVal* YExpression::exec() {
-
+	return nullptr;
 }
 
 

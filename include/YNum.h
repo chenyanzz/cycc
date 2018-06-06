@@ -8,7 +8,7 @@
 
 #include "YType.h"
 
-class YNum : YType {
+class YNum : public YType {
 
 protected:
     YNum():bIsSigned(true),bIsDecimal(false){};

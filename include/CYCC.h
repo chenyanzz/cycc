@@ -7,7 +7,7 @@
 #pragma once
 
 #include <iostream>
-#include "define.h"
+#include "common.h"
 
 class CYCC {
 public:

@@ -10,9 +10,9 @@
 #include <set>
 #include <string>
 #include "CYCC.h"
-#include "define.h"
+#include "common.h"
 
-class YType : CYCC {
+class YType : public CYCC {
 
 protected:
 
@@ -40,9 +40,9 @@ public:
     static pYType Char, UChar, Short, UShort, Int, UInt, Long, ULong, LongLong, ULongLong, Float, Double, LongDouble;
 
 public:
-    static YType* add(const char* name, const int size, const BaseType baseType);
+    static bool add(const char* name, const int size, const BaseType baseType,YType*& pNewType);
 
-    static YType* get(const char* code);
+    static bool get(const char* code,YType*& pType);
 
     static void init();
 

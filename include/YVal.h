@@ -11,11 +11,12 @@
 #include "YType.h"
 #include "YException.h"
 
-class YVal : CYCC {
+class YVal :public CYCC {
 public:
     void print() override;
     const char* className() const override;
-    static YVal* parse(char* s);
+
+    static bool parse(char* s, YVal*& pVal);
 
     YVal* clone();
     YVal* castTo(YType* pNewType);
@@ -23,16 +24,19 @@ public:
     ~YVal();
 
 protected:
-    YType* ptype;//ptype is destroyed when going out of scope.
-    byte* pdata;
+    YType* pType;//pType is destroyed when going out of scope.
+    byte* pData;
 
-    static YVal* parseInt(const char* s);
-    static YVal* parseDecimal(const char* s);
+	//NOTE that pVal must be available
+    static bool parseInt(const char* s,YVal* pVal);
+    static bool parseDecimal(const char* s,YVal* pVal);
 
-    YVal() : ptype(nullptr), pdata(nullptr) {};
 
-    YVal(YType* ptype,void* pdata);
+    YVal() : pType(nullptr), pData(nullptr) {};
+
+    YVal(YType* ptype, void* pdata);
     YVal(YVal* pVal);
+
 
     friend void test_YVal();//for debug
 };

@@ -8,10 +8,10 @@
 
 
 #include <string>
-#include "define.h"
+#include "common.h"
 #include "CYCC.h"
 
-class YException : CYCC {
+class YException :public CYCC {
 protected:
     std::string err_str;
 
@@ -41,3 +41,20 @@ public:
     const char* className() const override;
     YParseFailedException(const char* clazz, const char* s, const char* msg);
 };
+
+class YNullptrException : public YException {
+public:
+	const char* className() const override;
+	YNullptrException(const char* name);
+};
+
+class YTypeNotFoundException : public YException {
+public:
+	const char* className() const override;
+	YTypeNotFoundException(const char* type);
+};
+
+YException* getLastError();
+void setLastError(YException* err);
+bool hasError();
+void clearLastError();

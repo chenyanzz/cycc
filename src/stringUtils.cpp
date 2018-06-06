@@ -60,6 +60,7 @@ int split(const string& str, vector<string>& ret_, string sep) {
 
 
 bool isFirstSubStr(const char* total, const char* substr) {
+    if(total== nullptr||substr== nullptr)return false;
 
     for(int i = 0; substr[i] != 0; i++) {
         if(total[i] != substr[i])return false;
@@ -70,6 +71,8 @@ bool isFirstSubStr(const char* total, const char* substr) {
 
 
 bool isLastSubStr(const char* total, const size_t total_len, const char* substr, const size_t substr_len) {
+    if(total== nullptr||substr== nullptr)return false;
+
     for(int i = total_len - 1, j = substr_len - 1; j >= 0; i--, j--) {
         if(total[i] != substr[j])return false;
     }
@@ -77,8 +80,9 @@ bool isLastSubStr(const char* total, const size_t total_len, const char* substr,
 }
 
 
-unsigned long long toUInt(const char* s, int radix) {
-    unsigned long long val = 0;
+bool toUInt(const char* s, int radix,long long& val) {
+    if(s== nullptr)return false;
+
     for(int i = 0; s[i] != 0; i++) {
         int hexletter = (s[i] | 0x20);
         int bitval;
@@ -90,11 +94,12 @@ unsigned long long toUInt(const char* s, int radix) {
         } else if(s[i]) {
 
         } else {
-            throw (YException) YInvalidCharException(s, i, "illegal char in a number");
+            
         }
 
         if(bitval >= radix) {
-            throw (YException) YInvalidCharException(s, i, "illegal char in a number");
+			setLastError(new YInvalidCharException(s, i, "illegal char in a number"));
+			return false;
         }
 
         val *= radix;
