@@ -9,11 +9,11 @@
 
 class YVar {
 protected:
-    const std::string name;
-    YVal* pVal;
+	const std::string name = "";
+	YVal* pVal             = nullptr;
 
 public:
-    YVar(const char* __name) : name(__name), pVal(nullptr) {};
+	YVar(const char* name) : name(name) {};
 
-    void setVal(YVal* pVal);
+	void setVal(YVal* pVal);
 };

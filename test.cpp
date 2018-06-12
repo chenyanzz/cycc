@@ -1,6 +1,7 @@
 /**
- * Created by cy on 2018/5/26.
- */
+* Created by cy on 2018/5/26.
+*/
+
 #include <iostream>
 #include "YException.h"
 #include "YVal.h"
@@ -65,42 +66,66 @@ void test_stringUtils() {
 void test_YVal() {
 	cout << endl << "******** test_YVal ********" << endl;
 
-	YVal val;
+	YVal* p;
 
-	RUN(YVal::parseInt("12345", &val), val.print());
-	RUN(YVal::parseInt("-12345", &val), val.print());
-	RUN(YVal::parseInt("12345U", &val), val.print());
-	RUN(YVal::parseInt("12345L", &val), val.print());
-	RUN(YVal::parseInt("12345UL", &val), val.print());
-	RUN(YVal::parseInt("12345ULL", &val), val.print());
-	RUN(YVal::parseInt("0xabc", &val), val.print());
-	RUN(YVal::parseInt("0b101", &val), val.print());
-	RUN(YVal::parseInt("0377", &val), val.print());
-	RUN(YVal::parseInt("12345UU", &val), val.print());
-	RUN(YVal::parseInt("abc", &val), val.print());
-	RUN(YVal::parseInt("0xAzz", &val), val.print());
-	RUN(YVal::parseInt("0999", &val), val.print());
-	RUN(YVal::parseInt("!@#$%", &val), val.print());
+	RUN(YVal::parse("12345",p),p->print());
+	delete p;
+	RUN(YVal::parse("-12345",p),p->print());
+	delete p;
+	RUN(YVal::parse("12345U",p),p->print());
+	delete p;
+	RUN(YVal::parse("12345L",p),p->print());
+	delete p;
+	RUN(YVal::parse("12345UL",p),p->print());
+	delete p;
+	RUN(YVal::parse("12345ULL",p),p->print());
+	delete p;
+	RUN(YVal::parse("0xabc",p),p->print());
+	delete p;
+	RUN(YVal::parse("0b101",p),p->print());
+	delete p;
+	RUN(YVal::parse("0377",p),p->print());
+	delete p;
+	RUN(YVal::parse("12345UU",p),p->print());
+	delete p;
+	RUN(YVal::parse("abc",p),p->print());
+	delete p;
+	RUN(YVal::parse("0xAzz",p),p->print());
+	delete p;
+	RUN(YVal::parse("0999",p),p->print());
+	delete p;
+	RUN(YVal::parse("!@#$%",p),p->print());
+	delete p;
 
-	RUN(YVal::parseDecimal(".123", &val), val.print());
-	RUN(YVal::parseDecimal("222.", &val), val.print());
-	RUN(YVal::parseDecimal("102.123", &val), val.print());
-	RUN(YVal::parseDecimal("1.abc", &val), val.print());
+	RUN(YVal::parse(".123",p),p->print());
+	delete p;
+	RUN(YVal::parse("222.",p),p->print());
+	delete p;
+	RUN(YVal::parse("102.123",p),p->print());
+	delete p;
+	RUN(YVal::parse("1.abc",p),p->print());
+	delete p;
 
-	RUN(YVal::parse("1.2", &val), val.print());
-
-
-	RUN(YVal::parseDecimal("5.678", &val),);
-	YVal* p = &val;
-
-	p->clone()->print();
+	RUN(YVal::parse("5.678", p),);
+	YVal* p1;
+	p1 = p->clone();
+	p1->print();
+	delete p1;
 	puts("");
-	p->castTo(YType::Float)->print();
+	p1 = p->castTo(YType::Float);
+	p1->print();
+	delete p1;
 	puts("");
-	p->castTo(YType::LongDouble)->print();
+	p1 = p->castTo(YType::LongDouble);
+	p1->print();
+	delete p1;
 	puts("");
-	p->castTo(YType::Int)->print();
+	p1 = p->castTo(YType::Int);
+	p1->print();
+	delete p1;
 	puts("");
+
+
 }
 
 

@@ -5,10 +5,8 @@
  */
 
 
-#include <vector>
-#include "YVal.h"
-
-class YEnv {
+class YEnv 
+{
 
 };
 

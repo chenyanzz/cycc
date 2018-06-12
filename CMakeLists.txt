@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(include)
 
-file(GLOB SRC src/*c src/*.cpp)
+file(GLOB SRC src/*.c src/*.cpp)
 file(GLOB HEADER include/*.h)
 
-add_executable(cycc test.cpp ${SRC} ${HEADER})
+add_executable(cycc test.cpp test.h ${SRC} ${HEADER})

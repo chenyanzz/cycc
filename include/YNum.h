@@ -8,7 +8,8 @@
 
 #include "YType.h"
 
-class YNum : public YType {
+class YNum : public YType 
+{
 
 protected:
     YNum():bIsSigned(true),bIsDecimal(false){};
@@ -19,6 +20,8 @@ public:
 
     void print() override;
     const char* className() const override;
+
+	virtual ~YNum() = default;
 
     friend class YType;
 };

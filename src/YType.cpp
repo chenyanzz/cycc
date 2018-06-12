@@ -19,7 +19,7 @@ const char* YType::str_unsigned = "unsigned ";
 
 const char* YType::str_signed = "signed ";
 
-YType::pYType
+YType::PType
 YType::Char = nullptr,
 YType::UChar = nullptr,
 YType::Short = nullptr,
@@ -33,7 +33,6 @@ YType::ULongLong = nullptr,
 YType::Float = nullptr,
 YType::Double = nullptr,
 YType::LongDouble = nullptr;
-
 
 bool YType::add(const char* name, const int size, const BaseType baseType, YType*& pType) {
 	if (baseType == cNum) {
@@ -58,7 +57,7 @@ bool YType::add(const char* name, const int size, const BaseType baseType, YType
 	}
 
 	pType->size = size;
-	pType->baseType = baseType;
+	pType->base_type = baseType;
 
 	types.insert(pType);
 	return true;
@@ -69,19 +68,19 @@ bool YType::get(const char* code, YType*& pType) {
 	clearLastError();
 
 	string str_type = code;
-	bool isSigned = isFirstSubStr(code, str_signed);
+	const bool isSigned = isFirstSubStr(code, str_signed);
 	if (isSigned) {
 		str_type = string(code + strlen(str_signed));
 	}
 
-	auto it = cyfind_if(types, [=](YType* pt) -> bool {return pt->name == str_type; });
+	const auto it = cyfind_if(types, [=](YType* pt) -> bool {return pt->name == str_type; });
 	if (it == types.end()) {
 		setLastError(new YTypeNotFoundException(code));
 		return false;
 	}
 
 	if (isSigned) {
-		if ((*it)->baseType != cNum) {
+		if ((*it)->base_type != cNum) {
 			setLastError(new YTypeNotFoundException(code));
 			return false;
 		}
@@ -115,15 +114,15 @@ void YType::init() {
 
 
 void YType::terminate() {
-	for (auto it = types.begin(); it != types.end(); it++) {
-		delete (*it);
+	for (auto p:types) {
+		delete p;
 	}
 	types.clear();
 }
 
 
 void YType::print() {
-	cout << "(" << className() << "){name=\"" << name << "\", size=" << size << ", baseType=" << baseType << "}";
+	cout << "(" << className() << "){name=\"" << name << "\", size=" << size << ", base_type=" << base_type << "}";
 }
 
 

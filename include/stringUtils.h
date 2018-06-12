@@ -17,4 +17,4 @@ int split(const string& str, vector<string>& ret_, string sep);
 
 bool isFirstSubStr(const char* total, const char* substr);
 
-bool isLastSubStr(const char* total, const size_t total_len, const char* substr, const size_t substr_len);
+bool isLastSubStr(const char* total, size_t total_len, const char* substr, size_t substr_len);

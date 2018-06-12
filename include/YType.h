@@ -10,45 +10,52 @@
 #include <set>
 #include <string>
 #include "CYCC.h"
-#include "common.h"
 
-class YType : public CYCC {
+class YType : public CYCC 
+{
+public:
+	YType(const YType&) = delete;
+	YType(YType&&) = delete;
+	YType& operator=(const YType&) = delete;
+	YType& operator=(YType&&) = delete;
+	virtual ~YType() = default;
 
 protected:
 
-    static std::set<YType*> types;
+	static std::set<YType*> types;
 
-    static const char* str_unsigned;
-    static const char* str_signed;
+	static const char* str_unsigned;
+	static const char* str_signed;
 
 
 public:
-    std::string name;
-    size_t size;
+	std::string name = "";
+	size_t size = 0;
 
-    enum BaseType {
-        cNum, cPtr, cStruct, cEnum
-    };
+	enum BaseType 
+	{
+		cNum, cPtr, cStruct, cEnum, UNDEFINED
+	};
 
-    BaseType baseType;
+	BaseType base_type = UNDEFINED;
 
 protected:
-    YType() = default;
+	YType() = default;
 
 public:
-    typedef YType* pYType;
-    static pYType Char, UChar, Short, UShort, Int, UInt, Long, ULong, LongLong, ULongLong, Float, Double, LongDouble;
+	typedef YType* PType;
+	static PType Char, UChar, Short, UShort, Int, UInt, Long, ULong, LongLong, ULongLong, Float, Double, LongDouble;
 
 public:
-    static bool add(const char* name, const int size, const BaseType baseType,YType*& pNewType);
+	static bool add(const char* name, int size, BaseType baseType, YType*& pNewType);
 
-    static bool get(const char* code,YType*& pType);
+	static bool get(const char* code, YType*& pType);
 
-    static void init();
+	static void init();
 
-    static void terminate();
+	static void terminate();
 
-    const char* className() const override;
-    void print() override;
+	const char* className() const override;
+	void print() override;
 };
 
