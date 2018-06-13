@@ -12,8 +12,9 @@
 #include "YType.h"
 #include "YException.h"
 #include "common.h"
+#include "Excutable.h"
 
-class YVal final :public CYCC 
+class YVal : public Executable
 {
 public:
 	YVal(const YVal&) = delete;
@@ -31,6 +32,12 @@ public:
 
 	YType* type();
 
+	YVal* execute() override;
+
+	//operators below
+
+	static YVal* add(YVal* v1, YVal* v2);
+	static YVal* mul(YVal* v1, YVal* v2);
 protected:
 
 	YType* pType=nullptr;//can NOT be deleted when destructing

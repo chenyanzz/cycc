@@ -13,7 +13,7 @@
 #include "Excutable.h"
 #include "YVal.h"
 
-class YExpression: public Executable {
+class YExpression: public Executable, public CYCC {
 public:
 
 	static bool parse(const char* str, YExpression* pExp);
@@ -37,7 +37,7 @@ protected:
 	static OperationNode* makeOperationTree(const char* str);
 };
 
-class YExpression::OperationNode {
+class YExpression::OperationNode : public Executable {
 public:
 	/** Usages:
 	* - l_operand++
@@ -55,4 +55,9 @@ public:
 		YExpression* r_operand = nullptr, YExpression* condition = nullptr);
 
 	OperationNode();
+
+
+	const char* className() const override;
+	void print() override;
+	YVal* execute() override;
 };

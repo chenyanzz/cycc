@@ -17,30 +17,79 @@ const char* YExpression::className() const { return "YExpression"; }
 void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}"; }
 
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
-	const char* first = str;
-	const char* last  = str + strlen(str);
+	// auto first = str;
+	// auto last  = str + strlen(str);
+	//
+	// auto root = new OperationNode;
+	// auto current = root;
+	//
+	// //to find signs
+	// for(; first != last; first++) {
+	// 	YVal* pVal;
+	// 	if(YVal::parse(first, pVal)) {
+	// 		
+	// 	}
+	//
+	// 	char c = *first;
+	// 	switch(c) {
+	// 	case '+':
+	// 		root->opType = OperationNode::add;
+	// 		break;
+	// 	case '-':
+	// 		root->opType = OperationNode::sub;
+	// 		break;
+	// 	case '*':
+	// 		root->opType = OperationNode::mul;
+	// 		break;
+	// 	case '/':
+	// 		root->opType = OperationNode::div;
+	// 		break;
+	// 	}
+	// }
+	//
+	// return nullptr;
 
-	OperationNode* root = new OperationNode;
-	//to find signs
-	for(; first != last; first++) {
-		char c = *first;
-		//pass if c is a identifier
-		if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') continue;
+	//test: 2+3*4
+	auto root    = new OperationNode;
+	root->opType = OperationNode::add;
+	YVal* pv;
+	YVal::parse("2", pv);
+	root->l_operand = pv;
 
-		switch(c) {
-		case '+': {}
-		}
-	}
+	auto mul_node = new OperationNode;
+	mul_node->opType = OperationNode::mul;
+	YVal::parse("3", pv);
+	mul_node->l_operand = pv;
+	YVal::parse("4", pv);
+	mul_node->r_operand = pv;
 
-	return nullptr;
+	root->r_operand = mul_node;
+
+	auto current = root;
+
+	return root;
 }
+
 
 YExpression::OperationNode::OperationNode(EOperatorType opType,
 	YExpression* l_operand, YExpression* r_operand, YExpression* condition)
 	: opType(opType), l_operand(l_operand), r_operand(r_operand), condition(condition) {}
 
 YExpression::OperationNode::OperationNode()
-	: opType(val), l_operand(nullptr), r_operand(nullptr), condition(nullptr) {};
+	: opType(val), l_operand(nullptr), r_operand(nullptr), condition(nullptr) {}
+
+const char* YExpression::OperationNode::className() const { return "YExpression::OperationNode"; }
+void YExpression::OperationNode::print() {}
+
+YVal* YExpression::OperationNode::execute() {
+	YVal* l_val = l_operand->execute();
+	YVal* r_val = r_operand->execute();
+	switch(opType) {
+	case add: {
+		return YVal::mul(l_val,r_val);
+	}
+	}
+}
 
 //1+2*3+4
 bool YExpression::parse(const char* str, YExpression* pExp) { return true; }

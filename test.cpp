@@ -66,8 +66,10 @@ void test_stringUtils() {
 void test_YVal() {
 	cout << endl << "******** test_YVal ********" << endl;
 
-	YVal* p;
+	YVal* p = nullptr;
 
+	RUN(YVal::parse("\'Z\'", p), p->print());
+	delete p;
 	RUN(YVal::parse("12345",p),p->print());
 	delete p;
 	RUN(YVal::parse("-12345",p),p->print());
@@ -128,14 +130,27 @@ void test_YVal() {
 
 }
 
+void test_operator() {
+	YVal* p1;
+	YVal::parse("1.2", p1);
+	YVal* p2;
+	YVal::parse("1.3", p2);
+
+	YVal::add(p1, p2)->print();
+	puts("");
+	YVal::mul(p1, p2)->print();
+	puts("");
+
+}
 
 void doTests() {
 	YType::init();
 
-	test_exception();
-	test_YNum();
-	test_stringUtils();
-	test_YVal();
+	// test_exception();
+	// test_YNum();
+	// test_stringUtils();
+	// test_YVal();
+	test_operator();
 
 	YType::terminate();
 }

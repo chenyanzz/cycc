@@ -6,10 +6,9 @@
 
 #pragma once
 #include "CYCC.h"
-#include "YVal.h"
+extern class YVal;
 
 // ReSharper disable once CppInconsistentNaming
-__interface Executable : CYCC
-{
-	virtual YVal* execute() = 0;
+__interface Executable: CYCC {
+	virtual YVal* execute();
 };
