@@ -229,7 +229,7 @@ YType* YVal::type() {
 	return pType;
 }
 
-YVal* YVal::execute() { return this; }
+YVal* YVal::execute() { return this->clone(); }
 
 YVal* YVal::add(YVal* v1, YVal* v2) {
 	const auto longdouble_v1 = v1->castTo(YType::LongDouble);

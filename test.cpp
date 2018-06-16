@@ -10,6 +10,7 @@
 #include "YType.h"
 #include "YNum.h"
 #include "stringUtils.h"
+#include "YExpression.h"
 
 #define RUN(exp,stat_print) if(exp==false){getLastError()->print();puts("");}else{stat_print;puts("");}
 
@@ -136,11 +137,21 @@ void test_operator() {
 	YVal* p2;
 	YVal::parse("1.3", p2);
 
-	YVal::add(p1, p2)->print();
-	puts("");
-	YVal::mul(p1, p2)->print();
-	puts("");
+	YVal* p;
+	p = YVal::add(p1, p2);
+	p->print();puts("");
+	delete p;
 
+	p = YVal::mul(p1, p2);
+	p->print(); puts("");
+	delete p;
+
+	auto tree = YExpression::makeTestOperationTree();
+	p = tree->execute();
+	p->print(); puts("");
+	delete p;
+
+	delete p1, p2;
 }
 
 void doTests() {

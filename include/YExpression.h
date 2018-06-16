@@ -24,17 +24,19 @@ public:
 
 	virtual ~YExpression() = default;
 
+	friend void test_operator();
+
 protected:
 	YExpression(const char* expr);
 	const std::string s_expr;
 
 	typedef unsigned char priority_t;
 	static const std::unordered_map<std::string, priority_t> operator_priority;
-	priority_t getPriority(std::string s);
-
+	
 	class OperationNode;
 	OperationNode* operation_tree;
 	static OperationNode* makeOperationTree(const char* str);
+	static OperationNode* makeTestOperationTree();
 };
 
 class YExpression::OperationNode : public Executable {
@@ -55,7 +57,7 @@ public:
 		YExpression* r_operand = nullptr, YExpression* condition = nullptr);
 
 	OperationNode();
-
+	virtual ~OperationNode() = default;
 
 	const char* className() const override;
 	void print() override;

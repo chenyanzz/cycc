@@ -47,10 +47,16 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	// 	}
 	// }
 	//
-	// return nullptr;
+	return nullptr;
 
-	//test: 2+3*4
-	auto root    = new OperationNode;
+	
+}
+
+YExpression::OperationNode * YExpression::makeTestOperationTree()
+{
+	//2+3*4 = 14
+
+	auto root = new OperationNode;
 	root->opType = OperationNode::add;
 	YVal* pv;
 	YVal::parse("2", pv);
@@ -84,11 +90,24 @@ void YExpression::OperationNode::print() {}
 YVal* YExpression::OperationNode::execute() {
 	YVal* l_val = l_operand->execute();
 	YVal* r_val = r_operand->execute();
+	YVal* ret = nullptr;
+
+	//NOTE that || and && are short-circuited so canNOT exec(r_operand) first!
+
 	switch(opType) {
-	case add: {
-		return YVal::mul(l_val,r_val);
+	case add: 
+		ret = YVal::add(l_val,r_val);
+		break;
+
+	case mul: 
+		ret =  YVal::mul(l_val, r_val);
+		break;
+
+	case val:
+		ret = l_operand->execute();
 	}
-	}
+
+	return ret;
 }
 
 //1+2*3+4

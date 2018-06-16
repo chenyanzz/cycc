@@ -38,6 +38,10 @@ public:
 
 	static YVal* add(YVal* v1, YVal* v2);
 	static YVal* mul(YVal* v1, YVal* v2);
+	
+	~YVal();
+    friend void test_YVal();//for debug
+
 protected:
 
 	YType* pType=nullptr;//can NOT be deleted when destructing
@@ -53,10 +57,8 @@ protected:
     YVal(YType* ptype, void* pdata);
     YVal(YVal* pVal);
 
-	~YVal();
 	
 
-    friend void test_YVal();//for debug
 
 public:
 	void print() override;
