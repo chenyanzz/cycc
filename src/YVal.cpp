@@ -475,17 +475,17 @@ YVal* YVal::castTo(YType* pNewType) {
 			void* p = nullptr;
 			switch(pNewType->size) {
 			case 4: {
-				p          = (float*)new byte[YType::Float->size];
+				p = (float*)new byte[YType::Float->size];
 				*(float*)p = oldval;
 				break;
 			}
 			case 8: {
-				p           = (double*)new byte[YType::Double->size];
+				p = (double*)new byte[YType::Double->size];
 				*(double*)p = oldval;
 				break;
 			}
 			case 16: {
-				p                = (long double*)new byte[YType::LongDouble->size];
+				p= (long double*)new byte[YType::LongDouble->size];
 				*(long double*)p = oldval;
 				break;
 			}

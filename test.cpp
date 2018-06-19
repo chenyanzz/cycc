@@ -157,10 +157,10 @@ void test_operator() {
 void doTests() {
 	YType::init();
 
-	// test_exception();
-	// test_YNum();
-	// test_stringUtils();
-	// test_YVal();
+	 test_exception();
+	 test_YNum();
+	 test_stringUtils();
+	 test_YVal();
 	test_operator();
 
 	YType::terminate();

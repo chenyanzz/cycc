@@ -30,13 +30,19 @@ protected:
 	YExpression(const char* expr);
 	const std::string s_expr;
 
+	//if EOperatorType==val then just see OperationNode::l_operand as a var/func and execute() on it
+	enum EOperatorType { add, sub, mul, div, val };
+
 	typedef unsigned char priority_t;
-	static const std::unordered_map<std::string, priority_t> operator_priority;
+	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
+	static const std::unordered_map<EOperatorType, int> operator_priority;
 	
 	class OperationNode;
 	OperationNode* operation_tree;
 	static OperationNode* makeOperationTree(const char* str);
 	static OperationNode* makeTestOperationTree();
+
+
 };
 
 class YExpression::OperationNode : public Executable {
@@ -45,11 +51,10 @@ public:
 	* - l_operand++
 	* - l_operand*r_operand
 	* - condition?l_operand:r_operand
+	* - l_operand[r_operand]
 	*/
-	Executable *l_operand, *r_operand, *condition;
 
-	//if EOperatorType==val then just see l_operand as a var/func and execute() on it
-	enum EOperatorType { add, sub, mul, div, val };
+	Executable *l_operand, *r_operand, *condition;
 
 	EOperatorType opType;
 

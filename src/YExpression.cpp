@@ -10,7 +10,8 @@ using namespace std;
 const unordered_map<string, YExpression::priority_t> YExpression::operator_priority =
 {
 	{"*", 3}, {"/", 3},
-	{"+", 4}, {"-", 4}
+	{"+", 4}, {"-", 4},
+
 };
 
 const char* YExpression::className() const { return "YExpression"; }
@@ -24,6 +25,13 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	// auto current = root;
 	//
 	// //to find signs
+	// /*
+	// loop{
+	//	
+	//	parse val if meet end parse sign;
+	//	if(sign priority < old 
+	// }
+	// */
 	// for(; first != last; first++) {
 	// 	YVal* pVal;
 	// 	if(YVal::parse(first, pVal)) {
@@ -49,7 +57,21 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	//
 	return nullptr;
 
+	OperationNode* root = new OperationNode, *current=root;
+	auto last_pri = (priority_t)1000;
+	current->opType = OperationNode::val;
+	current->l_operand = parseValNode();
 	
+	while (true) {
+		type = parseSign();
+		auto pri = getPriority(type);
+
+		//find node->father -r
+		auto exe = findNode(current,pri);
+		auto node = new OperationNode;
+		node->l_operand = exe;
+		node->r_operand = parseValNode();
+	}
 }
 
 YExpression::OperationNode * YExpression::makeTestOperationTree()
