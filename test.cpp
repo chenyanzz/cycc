@@ -71,45 +71,45 @@ void test_YVal() {
 
 	RUN(YVal::parse("\'Z\'", p), p->print());
 	delete p;
-	RUN(YVal::parse("12345",p),p->print());
+	RUN(YVal::parse("12345", p), p->print());
 	delete p;
-	RUN(YVal::parse("-12345",p),p->print());
+	RUN(YVal::parse("-12345", p), p->print());
 	delete p;
-	RUN(YVal::parse("12345U",p),p->print());
+	RUN(YVal::parse("12345U", p), p->print());
 	delete p;
-	RUN(YVal::parse("12345L",p),p->print());
+	RUN(YVal::parse("12345L", p), p->print());
 	delete p;
-	RUN(YVal::parse("12345UL",p),p->print());
+	RUN(YVal::parse("12345UL", p), p->print());
 	delete p;
-	RUN(YVal::parse("12345ULL",p),p->print());
+	RUN(YVal::parse("12345ULL", p), p->print());
 	delete p;
-	RUN(YVal::parse("0xabc",p),p->print());
+	RUN(YVal::parse("0xabc", p), p->print());
 	delete p;
-	RUN(YVal::parse("0b101",p),p->print());
+	RUN(YVal::parse("0b101", p), p->print());
 	delete p;
-	RUN(YVal::parse("0377",p),p->print());
+	RUN(YVal::parse("0377", p), p->print());
 	delete p;
-	RUN(YVal::parse("12345UU",p),p->print());
+	RUN(YVal::parse("12345UU", p), p->print());
 	delete p;
-	RUN(YVal::parse("abc",p),p->print());
+	RUN(YVal::parse("abc", p), p->print());
 	delete p;
-	RUN(YVal::parse("0xAzz",p),p->print());
+	RUN(YVal::parse("0xAzz", p), p->print());
 	delete p;
-	RUN(YVal::parse("0999",p),p->print());
+	RUN(YVal::parse("0999", p), p->print());
 	delete p;
-	RUN(YVal::parse("!@#$%",p),p->print());
-	delete p;
-
-	RUN(YVal::parse(".123",p),p->print());
-	delete p;
-	RUN(YVal::parse("222.",p),p->print());
-	delete p;
-	RUN(YVal::parse("102.123",p),p->print());
-	delete p;
-	RUN(YVal::parse("1.abc",p),p->print());
+	RUN(YVal::parse("!@#$%", p), p->print());
 	delete p;
 
-	RUN(YVal::parse("5.678", p),);
+	RUN(YVal::parse(".123", p), p->print());
+	delete p;
+	RUN(YVal::parse("222.", p), p->print());
+	delete p;
+	RUN(YVal::parse("102.123", p), p->print());
+	delete p;
+	RUN(YVal::parse("1.abc", p), p->print());
+	delete p;
+
+	RUN(YVal::parse("5.678", p), );
 	YVal* p1;
 	p1 = p->clone();
 	p1->print();
@@ -139,7 +139,7 @@ void test_operator() {
 
 	YVal* p;
 	p = YVal::add(p1, p2);
-	p->print();puts("");
+	p->print(); puts("");
 	delete p;
 
 	p = YVal::mul(p1, p2);
@@ -157,10 +157,10 @@ void test_operator() {
 void doTests() {
 	YType::init();
 
-	 test_exception();
-	 test_YNum();
-	 test_stringUtils();
-	 test_YVal();
+	//test_exception();
+	//test_YNum();
+	//test_stringUtils();
+	//test_YVal();
 	test_operator();
 
 	YType::terminate();

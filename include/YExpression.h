@@ -13,7 +13,7 @@
 #include "Excutable.h"
 #include "YVal.h"
 
-class YExpression: public Executable, public CYCC {
+class YExpression: public Executable{
 public:
 
 	static bool parse(const char* str, YExpression* pExp);
@@ -35,7 +35,6 @@ protected:
 
 	typedef unsigned char priority_t;
 	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
-	static const std::unordered_map<EOperatorType, int> operator_priority;
 	
 	class OperationNode;
 	OperationNode* operation_tree;

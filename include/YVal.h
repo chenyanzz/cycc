@@ -37,11 +37,13 @@ public:
 	//operators below
 
 	static YVal* add(YVal* v1, YVal* v2);
+	static YVal* sub(YVal* v1, YVal* v2);
 	static YVal* mul(YVal* v1, YVal* v2);
-	
+	static YVal* div(YVal* v1, YVal* v2);
+
 	~YVal();
     friend void test_YVal();//for debug
-
+	friend class YExpression;
 protected:
 
 	YType* pType=nullptr;//can NOT be deleted when destructing
@@ -56,9 +58,6 @@ protected:
 
     YVal(YType* ptype, void* pdata);
     YVal(YVal* pVal);
-
-	
-
 
 public:
 	void print() override;
