@@ -11,9 +11,8 @@
 
 using namespace std;
 
-string trim(const string& str);
-
-int split(const string& str, vector<string>& ret_, string sep);
+//remember to release
+char* trimAll(const char* s);
 
 bool isFirstSubStr(const char* total, const char* substr);
 

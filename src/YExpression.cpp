@@ -17,39 +17,12 @@ const char* YExpression::className() const { return "YExpression"; }
 void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}"; }
 
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
-	// auto first = str;
-	// auto last  = str + strlen(str);
-	//
-	// auto root = new OperationNode;
-	// auto current = root;
-	//
-	// //to find signs
-	// for(; first != last; first++) {
-	// 	YVal* pVal;
-	// 	if(YVal::parse(first, pVal)) {
-	// 		
-	// 	}
-	//
-	// 	char c = *first;
-	// 	switch(c) {
-	// 	case '+':
-	// 		root->opType = OperationNode::add;
-	// 		break;
-	// 	case '-':
-	// 		root->opType = OperationNode::sub;
-	// 		break;
-	// 	case '*':
-	// 		root->opType = OperationNode::mul;
-	// 		break;
-	// 	case '/':
-	// 		root->opType = OperationNode::div;
-	// 		break;
-	// 	}
-	// }
-	//
-	return nullptr;
+	const auto root_node = new OperationNode;
 
+	auto current_node = root_node;
+	Executable* val;
 	
+	return nullptr;
 }
 
 YExpression::OperationNode * YExpression::makeTestOperationTree()

@@ -14,7 +14,6 @@ using namespace std;
 #define CHECK_NULLPTR(param) if((param)==nullptr){setLastError(new YNullptrException(#param));}
 
 const char* YVal::className() const {
-
 	return "YVal";
 }
 
@@ -87,15 +86,15 @@ bool YVal::parseInt(const char* s, YVal* pVal) {
 
 	//for char val
 	if(s[0] == '\'' && s[2] == '\'') {
-		pVal->pType         = YNum::Char;
-		pVal->pData         = new byte[pVal->pType->size];
+		pVal->pType = YNum::Char;
+		pVal->pData = new byte[pVal->pType->size];
 		*(char*)pVal->pData = s[1];
 		return true;
 	}
 
 	//for int val
 
-	int radix             = 10;
+	int radix = 10;
 	const size_t buf_size = 100;
 	static char buf[buf_size];
 	strcpy_s(buf, buf_size, s);
@@ -107,7 +106,7 @@ bool YVal::parseInt(const char* s, YVal* pVal) {
 	if(buf[0] == '\'' && buf[strlen(buf) - 1] == '\'') {
 		pc_num++;
 		buf[strlen(buf) - 1] = 0;
-		p_type               = YType::Char;
+		p_type = YType::Char;
 	}
 
 	/*prefix*/
@@ -173,8 +172,8 @@ bool YVal::parseInt(const char* s, YVal* pVal) {
 
 	/*number part*/
 
-	unsigned long long num   = 0;
-	for(char* org_p          = pc_num; pc_num - org_p < len; pc_num++) {
+	unsigned long long num = 0;
+	for(char* org_p = pc_num; pc_num - org_p < len; pc_num++) {
 		const char hexletter = (*pc_num | (char)0x20);
 		int bitval;
 
@@ -286,10 +285,10 @@ bool YVal::parseDecimal(const char* s, YVal* pVal) {
 	static char buf[buf_size];
 	strcpy_s(buf, buf_size, s);
 	char* pc_num = buf;
-	size_t len   = min(strlen(s), buf_size);
+	size_t len = min(strlen(s), buf_size);
 
 	bool bNegative = false;
-	char* pc_dot   = pc_num;
+	char* pc_dot = pc_num;
 
 	/*prefix*/
 
@@ -383,7 +382,7 @@ bool YVal::parseDecimal(const char* s, YVal* pVal) {
 
 YVal* YVal::castTo(YType* pNewType) {
 	YType* p_old_type = pType;
-	byte* p_old_data  = pData;
+	byte* p_old_data = pData;
 
 	//the cases without a memory-change:
 	//anyone is not a number
@@ -397,7 +396,7 @@ YVal* YVal::castTo(YType* pNewType) {
 	}
 
 	//deal with the cast between int and decimal
-	YVal* pNewVal  = new YVal;
+	YVal* pNewVal = new YVal;
 	pNewVal->pType = pNewType;
 
 	if(pNewType->base_type == YType::cNum) {
@@ -422,17 +421,17 @@ YVal* YVal::castTo(YType* pNewType) {
 			void* p = nullptr;
 			switch(pNewType->size) {
 			case 4: {
-				p          = (float*)new byte[YType::Float->size];
+				p = (float*)new byte[YType::Float->size];
 				*(float*)p = oldval;
 				break;
 			}
 			case 8: {
-				p           = (double*)new byte[YType::Double->size];
+				p = (double*)new byte[YType::Double->size];
 				*(double*)p = oldval;
 				break;
 			}
 			case 16: {
-				p                = (long double*)new byte[YType::LongDouble->size];
+				p = (long double*)new byte[YType::LongDouble->size];
 				*(long double*)p = oldval;
 				break;
 			}
@@ -475,17 +474,17 @@ YVal* YVal::castTo(YType* pNewType) {
 			void* p = nullptr;
 			switch(pNewType->size) {
 			case 4: {
-				p          = (float*)new byte[YType::Float->size];
+				p = (float*)new byte[YType::Float->size];
 				*(float*)p = oldval;
 				break;
 			}
 			case 8: {
-				p           = (double*)new byte[YType::Double->size];
+				p = (double*)new byte[YType::Double->size];
 				*(double*)p = oldval;
 				break;
 			}
 			case 16: {
-				p                = (long double*)new byte[YType::LongDouble->size];
+				p = (long double*)new byte[YType::LongDouble->size];
 				*(long double*)p = oldval;
 				break;
 			}

@@ -40,27 +40,19 @@ void test_exception() {
 
 void test_stringUtils() {
 	cout << endl << "******** test_stringUtils ********" << endl;
-
-	string s;
+	
 	bool b;
-
-	s = trim("\n \n hello \n ");
-	cout << s << endl;
-
-	vector<string> vec;
-	split("a;b;c;d", vec, ";");
-	int p = 0;
-	cout << vec[p++] << " ";
-	cout << vec[p++] << " ";
-	cout << vec[p++] << " ";
-	cout << vec[p++] << " ";
-	cout << endl;
-
 	b = isFirstSubStr("abcde", "abc");
 	cout << b << " ";
 	b = isLastSubStr("abcde", 5, "de", 2);
 	cout << b << " ";
 	cout << endl;
+
+
+	char* code = R"(
+	for (int i=0; i < 10; i ++ )
+	)"
+
 }
 
 
@@ -138,6 +130,7 @@ void test_operator() {
 	YVal::parse("1.3", p2);
 
 	YVal* p;
+
 	p = YVal::add(p1, p2);
 	p->print();puts("");
 	delete p;
