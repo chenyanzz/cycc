@@ -7,22 +7,69 @@
 
 using namespace std;
 
-const unordered_map<string, YExpression::priority_t> YExpression::operator_priority =
-{
-	{"*", 3}, {"/", 3},
-	{"+", 4}, {"-", 4}
+const std::unordered_map<YExpression::EOperatorType, YExpression::priority_t> YExpression::operator_priority = {
+	{add,4},{sub,4},
+	{mul,3},{div,3}
 };
 
 const char* YExpression::className() const { return "YExpression"; }
 void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}"; }
 
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
-	const auto root_node = new OperationNode;
-
-	auto current_node = root_node;
-	Executable* val;
-	
+	// auto first = str;
+	// auto last  = str + strlen(str);
+	//
+	// auto root = new OperationNode;
+	// auto current = root;
+	//
+	// //to find signs
+	// /*
+	// loop{
+	//	
+	//	parse val if meet end parse sign;
+	//	if(sign priority < old 
+	// }
+	// */
+	// for(; first != last; first++) {
+	// 	YVal* pVal;
+	// 	if(YVal::parse(first, pVal)) {
+	// 		
+	// 	}
+	//
+	// 	char c = *first;
+	// 	switch(c) {
+	// 	case '+':
+	// 		root->opType = OperationNode::add;
+	// 		break;
+	// 	case '-':
+	// 		root->opType = OperationNode::sub;
+	// 		break;
+	// 	case '*':
+	// 		root->opType = OperationNode::mul;
+	// 		break;
+	// 	case '/':
+	// 		root->opType = OperationNode::div;
+	// 		break;
+	// 	}
+	// }
+	//
 	return nullptr;
+
+	//OperationNode* root = new OperationNode, *current = root;
+	//auto last_pri = (priority_t)1000;
+	//current->opType = val;
+	//current->l_operand = parseValNode();
+
+	//while (true) {
+	//	type = parseSign();
+	//	auto pri = getPriority(type);
+
+	//	//find node->father -r
+	//	auto exe = findNode(current, pri);
+	//	auto node = new OperationNode;
+	//	node->l_operand = exe;
+	//	node->r_operand = parseValNode();
+	//}
 }
 
 YExpression::OperationNode * YExpression::makeTestOperationTree()
@@ -30,13 +77,13 @@ YExpression::OperationNode * YExpression::makeTestOperationTree()
 	//2+3*4 = 14
 
 	auto root = new OperationNode;
-	root->opType = OperationNode::add;
+	root->opType = add;
 	YVal* pv;
 	YVal::parse("2", pv);
 	root->l_operand = pv;
 
 	auto mul_node = new OperationNode;
-	mul_node->opType = OperationNode::mul;
+	mul_node->opType = mul;
 	YVal::parse("3", pv);
 	mul_node->l_operand = pv;
 	YVal::parse("4", pv);
@@ -67,14 +114,15 @@ YVal* YExpression::OperationNode::execute() {
 
 	//NOTE that || and && are short-circuited so canNOT exec(r_operand) first!
 
-	switch(opType) {
-	case add: 
-		ret = YVal::add(l_val,r_val);
+	switch (opType) {
+	case add:
+		ret = YVal::add(l_val, r_val);
 		break;
 
-	case mul: 
-		ret =  YVal::mul(l_val, r_val);
+	case mul:
+		ret = YVal::mul(l_val, r_val);
 		break;
+
 
 	case val:
 		ret = l_operand->execute();
