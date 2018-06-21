@@ -18,10 +18,6 @@ void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}";
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	auto first = str;
 	auto last = str + strlen(str);
-	//
-	// auto root = new OperationNode;
-	// auto current = root;
-	//
 	// //to find signs
 	// /*
 	// loop{
@@ -30,31 +26,9 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	//	if(sign priority < old 
 	// }
 	// */
-	// for(; first != last; first++) {
-	// 	YVal* pVal;
-	// 	if(YVal::parse(first, pVal)) {
-	// 		
-	// 	}
-	//
-	// 	char c = *first;
-	// 	switch(c) {
-	// 	case '+':
-	// 		root->opType = OperationNode::add;
-	// 		break;
-	// 	case '-':
-	// 		root->opType = OperationNode::sub;
-	// 		break;
-	// 	case '*':
-	// 		root->opType = OperationNode::mul;
-	// 		break;
-	// 	case '/':
-	// 		root->opType = OperationNode::div;
-	// 		break;
-	// 	}
-	// }
-	//
+	
 
-	OperationNode* current_node;
+	Executable* current = parseIdentifier(first);
 	auto last_pri = (priority_t)1000;
 
 	EOperatorType type;
@@ -63,8 +37,7 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	while((first != last) && (*first != 0)) {
 
 		type = parseSign(first);
-		current_node = new OperationNode(type, current_node);
-
+		current = new OperationNode(type, current,parseIdentifier(first));
 		// auto pri = getPriority(type);
 		// //TODO: find node->father -r
 		// //auto l_node = findNode(current_node, pri);
@@ -76,7 +49,7 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 		// new_node->r_operand = current_node;
 	}
 
-	return nullptr;
+	return (OperationNode*)current;
 }
 
 YExpression::EOperatorType YExpression::parseSign(const char*& str) {
@@ -86,15 +59,19 @@ YExpression::EOperatorType YExpression::parseSign(const char*& str) {
 		return opType;
 	case '+':
 		opType = add;
+		str++;
 		break;
 	case '-':
 		opType = sub;
+		str++;
 		break;
 	case '*':
 		opType = mul;
+		str++;
 		break;
 	case '/':
 		opType = div;
+		str++;
 		break;
 	default:
 		opType = UNDEFINED;
@@ -115,14 +92,14 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 	s_identifier[len] = 0;
 
 	YVal* pVal;
-	if (!YVal::parse(s_identifier, pVal))return nullptr;
-	
+	if(!YVal::parse(s_identifier, pVal))return nullptr;
+
 	str = p;
 	return pVal;
 }
 
 constexpr bool YExpression::isCharInIdentifier(const char c) {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '.';
 }
 
 YExpression::priority_t YExpression::getPriority(EOperatorType type) { return operator_priority.find(type)->second; }

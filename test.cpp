@@ -159,6 +159,7 @@ void test_YExpression() {
 	p->print();
 	puts("");
 	delete p;
+	delete tree;
 
 	const char* s;
 	cout << YExpression::parseSign(s = "+") << " ";
@@ -191,7 +192,15 @@ void test_YExpression() {
 	cout << " " << YExpression::parseSign(s) << " ";
 	p = (YVal*)YExpression::parseIdentifier(s);
 	p->print();
+	puts("");
 	delete p;
+
+	tree = YExpression::makeOperationTree("3*4/6+1-2");
+	p = tree->execute();
+	p->print();
+	puts("");
+	delete p;
+	delete tree;
 }
 
 void doTests() {
