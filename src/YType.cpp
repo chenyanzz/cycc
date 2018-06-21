@@ -122,7 +122,7 @@ void YType::terminate() {
 
 
 void YType::print() {
-	cout << "(" << className() << "){name=\"" << name << "\", size=" << size << ", base_type=" << base_type << "}";
+	cout << "[" << className() << "]{name=\"" << name << "\", size=" << size << ", base_type=" << base_type << "}";
 }
 
 

@@ -4,12 +4,15 @@
 
 #include "YExpression.h"
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
 const std::unordered_map<YExpression::EOperatorType, YExpression::priority_t> YExpression::operator_priority = {
 	{add, 4}, {sub, 4},
 	{mul, 3}, {div, 3},
+
+	{val, 0}//the greatest priority, just to get val
 };
 
 const char* YExpression::className() const { return "YExpression"; }
@@ -18,38 +21,42 @@ void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}";
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	auto first = str;
 	auto last = str + strlen(str);
-	// //to find signs
-	// /*
-	// loop{
-	//	
-	//	parse val if meet end parse sign;
-	//	if(sign priority < old 
-	// }
-	// */
-	
 
-	Executable* current = parseIdentifier(first);
-	auto last_pri = (priority_t)1000;
-
+	OperationNode* current = parseIdentifier(first);
+	OperationNode* const root_node = current;
 	EOperatorType type;
+	stack<OperationNode*> current_branch_stack;
 
+	current_branch_stack.push(current);
 	//forst of all needn't consider priority,just left to right
 	while((first != last) && (*first != 0)) {
 
 		type = parseSign(first);
-		current = new OperationNode(type, current,parseIdentifier(first));
-		// auto pri = getPriority(type);
-		// //TODO: find node->father -r
-		// //auto l_node = findNode(current_node, pri);
-		//
-		// auto l_node = current_node;
-		// auto new_node = new OperationNode;
-		// new_node->l_operand = l_node;
-		// current_node = new OperationNode;
-		// new_node->r_operand = current_node;
+		const priority_t priority = getPriority(type);
+
+		//TODO: find current.parent... till its sign.priority <= old then
+
+		//priority bigger, calc later
+
+		//use a stack to do this
+		//1 ==>
+		//(1+2) ==>
+		//(1+(2*3))
+
+		//there's the bug
+		while(getPriority(current_branch_stack.top()->opType) > priority) {
+			current_branch_stack.pop();
+		}
+
+		OperationNode* father_node = current_branch_stack.top();
+		//build a new node instead of the parent's r_operand
+		OperationNode* new_node = new OperationNode(type, father_node->r_operand, parseIdentifier(first));
+		father_node->r_operand = new_node;
+
+		current_branch_stack.push(new_node);
 	}
 
-	return (OperationNode*)current;
+	return root_node;
 }
 
 YExpression::EOperatorType YExpression::parseSign(const char*& str) {
@@ -81,7 +88,7 @@ YExpression::EOperatorType YExpression::parseSign(const char*& str) {
 	return opType;
 }
 
-Executable* YExpression::parseIdentifier(const char*& str) {
+YExpression::OperationNode* YExpression::parseIdentifier(const char*& str) {
 	const char* p = str;
 	while(isCharInIdentifier(*p))p++;
 
@@ -95,7 +102,7 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 	if(!YVal::parse(s_identifier, pVal))return nullptr;
 
 	str = p;
-	return pVal;
+	return new OperationNode(val, nullptr,pVal);
 }
 
 constexpr bool YExpression::isCharInIdentifier(const char c) {
@@ -134,44 +141,6 @@ YExpression::OperationNode* YExpression::makeTestOperationTree() {
 	root->r_operand = div_node;
 
 	return root;
-}
-
-
-YExpression::OperationNode::OperationNode(EOperatorType opType, Executable* l_operand, Executable* r_operand, Executable* condition)
-	: opType(opType), l_operand(l_operand), r_operand(r_operand), condition(condition) {}
-
-YExpression::OperationNode::OperationNode() {}
-
-const char* YExpression::OperationNode::className() const { return "YExpression::OperationNode"; }
-void YExpression::OperationNode::print() {}
-
-YVal* YExpression::OperationNode::execute() {
-	YVal* l_val = l_operand->execute();
-	YVal* r_val = r_operand->execute();
-	YVal* ret = nullptr;
-
-	//NOTE that || and && are short-circuited so canNOT exec(r_operand) first!
-
-	switch(opType) {
-	case add:
-		ret = YVal::add(l_val, r_val);
-		break;
-	case sub:
-		ret = YVal::sub(l_val, r_val);
-		break;
-	case mul:
-		ret = YVal::mul(l_val, r_val);
-		break;
-	case div:
-		ret = YVal::div(l_val, r_val);
-		break;
-
-	case UNDEFINED:
-	default:
-		throw YException("opType undefined");
-	}
-
-	return ret;
 }
 
 //1+2*3+4

@@ -36,7 +36,7 @@ void YVal::print() {
 	if (pType->base_type == YType::cNum) {
 		const auto pNum = (YNum*)pType;
 		if (pNum->bIsDecimal) {
-			cout << "(YVal){num=";
+			cout << "[YVal]{num=";
 			switch (pType->size) {
 			case 4:
 				cout << *(float*)pData;
@@ -53,7 +53,7 @@ void YVal::print() {
 			cout << "}";
 		}
 		else {
-			cout << "(YVal){data=0x";
+			cout << "[YVal]{data=0x";
 			switch (pType->size) {
 			case 1:
 				cout << hex << (short)*(unsigned char*)pData; //to show char as a number

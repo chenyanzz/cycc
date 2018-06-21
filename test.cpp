@@ -155,6 +155,8 @@ void test_YExpression() {
 	YVal* p;
 
 	auto tree = YExpression::makeTestOperationTree();
+	tree->print();
+	cout << "=" << endl;
 	p = tree->execute();
 	p->print();
 	puts("");
@@ -186,16 +188,17 @@ void test_YExpression() {
 	endl(cout);
 
 	s = "12.34+56.78";
-	p = (YVal*)YExpression::parseIdentifier(s);
-	p->print();
-	delete p;
-	cout << " " << YExpression::parseSign(s) << " ";
-	p = (YVal*)YExpression::parseIdentifier(s);
-	p->print();
+	YExpression::OperationNode* node = new YExpression::OperationNode;
+	node->l_operand = (YVal*)YExpression::parseIdentifier(s);
+	node->opType = YExpression::parseSign(s);
+	node->r_operand = (YVal*)YExpression::parseIdentifier(s);
+	node->print();
 	puts("");
-	delete p;
+	delete node;
 
-	tree = YExpression::makeOperationTree("3*4/6+1-2");
+	tree = YExpression::makeOperationTree("1+2*3");
+	tree->print();
+	cout << "=" << endl;
 	p = tree->execute();
 	p->print();
 	puts("");

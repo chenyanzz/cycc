@@ -13,5 +13,5 @@ const char* YNum::className() const {
 }
 
 void YNum::print() {
-    cout << "(YNum){name=\"" << name << "\"}";
+    cout << "[YNum]{name=\"" << name << "\"}";
 }

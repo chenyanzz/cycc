@@ -12,6 +12,7 @@
 #include "CYCC.h"
 #include "Excutable.h"
 #include "YVal.h"
+#include <stack>
 
 class YExpression: public Executable {
 public:
@@ -25,7 +26,8 @@ public:
 	friend void test_YExpression();
 
 protected:
-	enum EOperatorType { add, sub, mul, div, UNDEFINED };
+	//EOperatorType = val when **r_operand** is just a val to be excuted
+	enum EOperatorType { add, sub, mul, div, val, UNDEFINED };
 
 	class OperationNode: public Executable {
 	public:
@@ -51,7 +53,7 @@ protected:
 		YVal* execute() override;
 	};
 
-	typedef int priority_t;
+	typedef unsigned int priority_t;
 protected:
 	const std::string s_expr;
 	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
@@ -65,10 +67,11 @@ protected:
 	static EOperatorType parseSign(const char*& str);
 
 	//currently just parse str as a YVal
-	//TODO: parse functions
-	static Executable* parseIdentifier(const char*& str);
+	//TODO: parse YFunction s
+	//it returns a node which optype=val
+	static OperationNode* parseIdentifier(const char*& str);
 
 	static constexpr bool isCharInIdentifier(const char c);
-
 	static priority_t getPriority(EOperatorType type);
+
 };
