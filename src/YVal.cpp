@@ -500,5 +500,7 @@ YVal::YVal(YType* ptype, void* pdata) {
 
 YVal::YVal(YVal* pVal) : YVal(pVal->pType, pVal->pData) {}
 
+YVal::~YVal() { delete pData; pData = nullptr; pType = nullptr; }
+
 template <typename Type>
 Type*& YVal::data() { return (Type*&)pData; }

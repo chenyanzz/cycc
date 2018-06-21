@@ -14,51 +14,51 @@
 #include "common.h"
 #include "Excutable.h"
 
-class YVal : public Executable
-{
-  public:
-	YVal(const YVal &) = delete;
-	YVal(YVal &&) = delete;
-	YVal &operator=(const YVal &) = delete;
-	YVal &operator=(YVal &&) = delete;
+class YVal: public Executable {
+public:
+	YVal(const YVal&) = delete;
+	YVal(YVal&&) = delete;
+	YVal& operator=(const YVal&) = delete;
+	YVal& operator=(YVal&&) = delete;
 
-	static bool parse(const char *s, YVal *&pVal);
+	static bool parse(const char* s, YVal*& pVal);
 
-	YVal *clone();
-	YVal *castTo(YType *pNewType);
+	YVal* clone();
+	YVal* castTo(YType* pNewType);
 
 	template <typename Type = void>
-	Type *&data();
+	Type*& data();
 
-	YType *type();
+	YType* type();
 
-	YVal *execute() override;
+	YVal* execute() override;
 
 	//operators below
 
-	static YVal *add(YVal *v1, YVal *v2);
-	static YVal *sub(YVal *v1, YVal *v2);
-	static YVal *mul(YVal *v1, YVal *v2);
-	static YVal *div(YVal *v1, YVal *v2);
+	static YVal* add(YVal* v1, YVal* v2);
+	static YVal* sub(YVal* v1, YVal* v2);
+	static YVal* mul(YVal* v1, YVal* v2);
+	static YVal* div(YVal* v1, YVal* v2);
 
 	~YVal();
 	friend void test_YVal(); //for debug
 	friend class YExpression;
 
-  protected:
-	YType *pType = nullptr; //can NOT be deleted when destructing
-	byte *pData = nullptr;  //pData is auto-destroyed
+protected:
+	YType* pType = nullptr; //can NOT be deleted when destructing
+	byte* pData = nullptr; //pData is auto-destroyed
 
+protected:
 	//NOTE that pVal must be available
-	static bool parseInt(const char *s, YVal *pVal);
-	static bool parseDecimal(const char *s, YVal *pVal);
+	static bool parseInt(const char* s, YVal* pVal);
+	static bool parseDecimal(const char* s, YVal* pVal);
 
 	YVal() = default;
 
-	YVal(YType *ptype, void *pdata);
-	YVal(YVal *pVal);
+	YVal(YType* ptype, void* pdata);
+	YVal(YVal* pVal);
 
-  public:
+public:
 	void print() override;
-	const char *className() const override;
+	const char* className() const override;
 };

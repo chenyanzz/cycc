@@ -40,18 +40,13 @@ void test_exception() {
 
 void test_stringUtils() {
 	cout << endl << "******** test_stringUtils ********" << endl;
-	
+
 	bool b;
 	b = isFirstSubStr("abcde", "abc");
 	cout << b << " ";
 	b = isLastSubStr("abcde", 5, "de", 2);
 	cout << b << " ";
 	cout << endl;
-
-
-	char* code = R"(
-	for (int i=0; i < 10; i ++ )
-	)"
 
 }
 
@@ -125,26 +120,78 @@ void test_YVal() {
 
 void test_operator() {
 	YVal* p1;
-	YVal::parse("1.2", p1);
+	YVal::parse("2", p1);
 	YVal* p2;
-	YVal::parse("1.3", p2);
+	YVal::parse("3", p2);
 
 	YVal* p;
 
 	p = YVal::add(p1, p2);
-	p->print();puts("");
+	p->print();
+	puts("");
+	delete p;
+
+	p = YVal::sub(p1, p2);
+	p->print();
+	puts("");
 	delete p;
 
 	p = YVal::mul(p1, p2);
-	p->print(); puts("");
+	p->print();
+	puts("");
 	delete p;
+
+	p = YVal::div(p1, p2);
+	p->print();
+	puts("");
+	delete p;
+
+
+	delete p1, p2;
+
+}
+
+void test_YExpression() {
+	YVal* p;
 
 	auto tree = YExpression::makeTestOperationTree();
 	p = tree->execute();
-	p->print(); puts("");
+	p->print();
+	puts("");
 	delete p;
 
-	delete p1, p2;
+	const char* s;
+	cout << YExpression::parseSign(s = "+") << " ";
+	cout << YExpression::parseSign(s = "-") << " ";
+	cout << YExpression::parseSign(s = "*") << " ";
+	cout << YExpression::parseSign(s = "/") << " ";
+	cout << YExpression::parseSign(s = "#") << " ";
+
+	endl(cout);
+
+	cout << YExpression::isCharInIdentifier('1') << " ";
+	cout << YExpression::isCharInIdentifier('z') << " ";
+	cout << YExpression::isCharInIdentifier('A') << " ";
+	cout << YExpression::isCharInIdentifier('_') << " ";
+	cout << YExpression::isCharInIdentifier('$') << " ";
+
+	endl(cout);
+
+	cout << YExpression::getPriority(YExpression::add) << " ";
+	cout << YExpression::getPriority(YExpression::sub) << " ";
+	cout << YExpression::getPriority(YExpression::mul) << " ";
+	cout << YExpression::getPriority(YExpression::div) << " ";
+
+	endl(cout);
+
+	s = "12.34+56.78";
+	p = (YVal*)YExpression::parseIdentifier(s);
+	p->print();
+	delete p;
+	cout << " " << YExpression::parseSign(s) << " ";
+	p = (YVal*)YExpression::parseIdentifier(s);
+	p->print();
+	delete p;
 }
 
 void doTests() {
@@ -154,7 +201,8 @@ void doTests() {
 	// test_YNum();
 	// test_stringUtils();
 	// test_YVal();
-	test_operator();
+	//test_operator();
+	test_YExpression();
 
 	YType::terminate();
 }

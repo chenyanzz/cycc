@@ -13,57 +13,62 @@
 #include "Excutable.h"
 #include "YVal.h"
 
-class YExpression: public Executable{
+class YExpression: public Executable {
 public:
-
-	static bool parse(const char* str, YExpression* pExp);
 	YVal* execute();
-
 	void print() override;
 	const char* className() const override;
 
-	virtual ~YExpression() = default;
+	static bool parse(const char* str, YExpression* pExp);
 
-	friend void test_operator();
+	virtual ~YExpression() = default;
+	friend void test_YExpression();
+
+protected:
+	enum EOperatorType { add, sub, mul, div, UNDEFINED };
+
+	class OperationNode: public Executable {
+	public:
+		/** Usages:
+		* - l_operand++
+		* - l_operand*r_operand
+		* - condition?l_operand:r_operand
+		* - l_operand[r_operand]
+		*/
+
+		Executable *l_operand = nullptr, *r_operand = nullptr, *condition = nullptr;
+
+		EOperatorType opType = UNDEFINED;
+
+		OperationNode(EOperatorType opType, Executable* l_operand,
+			Executable* r_operand = nullptr, Executable* condition = nullptr);
+
+		OperationNode();
+		virtual ~OperationNode() = default;
+
+		const char* className() const override;
+		void print() override;
+		YVal* execute() override;
+	};
+
+	typedef int priority_t;
+protected:
+	const std::string s_expr;
+	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
+	OperationNode* operation_tree = nullptr;
 
 protected:
 	YExpression(const char* expr);
-	const std::string s_expr;
-
-	//if EOperatorType==val then just see OperationNode::l_operand as a var/func and execute() on it
-	enum EOperatorType { add, sub, mul, div, val };
-
-	typedef unsigned char priority_t;
-	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
-	
-	class OperationNode;
-	OperationNode* operation_tree;
 	static OperationNode* makeOperationTree(const char* str);
 	static OperationNode* makeTestOperationTree();
 
+	static EOperatorType parseSign(const char*& str);
 
-};
+	//currently just parse str as a YVal
+	//TODO: parse functions
+	static Executable* parseIdentifier(const char*& str);
 
-class YExpression::OperationNode : public Executable {
-public:
-	/** Usages:
-	* - l_operand++
-	* - l_operand*r_operand
-	* - condition?l_operand:r_operand
-	* - l_operand[r_operand]
-	*/
+	static constexpr bool isCharInIdentifier(const char c);
 
-	Executable *l_operand, *r_operand, *condition;
-
-	EOperatorType opType;
-
-	OperationNode(EOperatorType opType, YExpression* l_operand,
-		YExpression* r_operand = nullptr, YExpression* condition = nullptr);
-
-	OperationNode();
-	virtual ~OperationNode() = default;
-
-	const char* className() const override;
-	void print() override;
-	YVal* execute() override;
+	static priority_t getPriority(EOperatorType type);
 };
