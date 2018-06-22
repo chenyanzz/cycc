@@ -59,8 +59,9 @@ public:
 	YTypeNotFoundException(const char* type);
 };
 
-//error dealing
-YException* getLastError();
-void setLastError(YException* err);
-bool hasError();
-void clearLastError();
+class YNotAAvailableNameException : public YException
+{
+public:
+	const char* className() const override;
+	YNotAAvailableNameException(const char* name);
+};

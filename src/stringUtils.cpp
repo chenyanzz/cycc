@@ -48,3 +48,15 @@ bool isLastSubStr(const char* total, const size_t total_len, const char* substr,
 	}
 	return true;
 }
+
+char* newString(const char* begin,const int len) {
+	char* new_string = new char[len + 1];
+	memcpy(new_string, begin, len);
+	new_string[len] = 0;
+
+	return new_string;
+}
+
+char* newString(const char* begin, const char* end) {
+	return newString(begin, end - begin);
+}

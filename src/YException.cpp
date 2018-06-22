@@ -13,11 +13,6 @@ using namespace std;
 static const size_t buf_size=100;
 static char buf[buf_size];
 
-static YException* pLastError = nullptr;
-YException* getLastError() { return pLastError; }
-void clearLastError() { setLastError(nullptr); }
-void setLastError(YException* err) { delete pLastError; pLastError = err; }
-bool hasError() { return pLastError != nullptr; }
 
 const char* YException::className() const { return "YException"; }
 YException::YException(const char* pc_err_str, ...) {
@@ -66,3 +61,8 @@ const char * YTypeNotFoundException::className() const{return "YTypeNotFoundExce
 
 YTypeNotFoundException::YTypeNotFoundException(const char * type) 
 	:YException("type \"%s\" not found", type) {}
+
+const char* YNotAAvailableNameException::className() const { return "YNotAAvailableNameException"; }
+
+YNotAAvailableNameException::YNotAAvailableNameException(const char* name)
+	:YException("\"%s\" is not a available name",name){}

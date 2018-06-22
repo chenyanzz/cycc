@@ -5,6 +5,7 @@
 #include "YExpression.h"
 #include <iostream>
 #include <deque>
+#include "stringUtils.h"
 
 using namespace std;
 
@@ -118,15 +119,10 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 	const char* p = str;
 
 	if(*p=='(') {
-		str++;
 		while (*p != ')')p++;
 		
 		//*str='(', *p=')'
-		int len = p - str;
-		char* s_expr = new char[len + 1];
-
-		memcpy(s_expr, str, len);
-		s_expr[len] = 0;
+		char* s_expr = newString(str+1, p);
 
 		str = p+1;
 
@@ -135,19 +131,13 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 
 	while(isCharInIdentifier(*p))p++;
 
-	int len = p - str;
-	char* s_identifier = new char[len + 1];
-
-	memcpy(s_identifier, str, len);
-	s_identifier[len] = 0;
-
-	YVal* pVal;
-	if(!YVal::parse(s_identifier, pVal))return nullptr;
+	char* s_identifier = newString(str,p);
 
 	str = p;
-	return pVal;
+	return YVal::parse(s_identifier);
 }
 
+//todo: there is a bug that -1 struct.member goes wrong
 constexpr bool YExpression::isCharInIdentifier(const char c) {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '.';
 }
@@ -156,31 +146,24 @@ YExpression::priority_t YExpression::getPriority(EOperatorType type) { return op
 
 YExpression::OperationNode* YExpression::makeTestOperationTree() {
 	//1+((2*3)-1)/4=2.25
-	YVal* pv;
-
 	auto mul_node = new OperationNode;
 	mul_node->opType = mul;
-	YVal::parse("2", pv);
-	mul_node->l_operand = pv;
-	YVal::parse("3", pv);
-	mul_node->r_operand = pv;
+	mul_node->l_operand = YVal::parse("2");
+	mul_node->r_operand = YVal::parse("3");
 
 	auto sub_node = new OperationNode;
 	sub_node->opType = sub;
 	sub_node->l_operand = mul_node;
-	YVal::parse("1", pv);
-	sub_node->r_operand = pv;
+	sub_node->r_operand = YVal::parse("1");;
 
 	auto div_node = new OperationNode;
 	div_node->opType = div;
 	div_node->l_operand = sub_node;
-	YVal::parse("4", pv);
-	div_node->r_operand = pv;
+	div_node->r_operand = YVal::parse("4");;
 
 	auto root = new OperationNode;
 	root->opType = add;
-	YVal::parse("1", pv);
-	root->l_operand = pv;
+	root->l_operand = YVal::parse("1");;
 	root->r_operand = div_node;
 
 	return root;

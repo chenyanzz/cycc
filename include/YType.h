@@ -49,7 +49,7 @@ public:
 public:
 	static bool add(const char* name, int size, BaseType baseType, YType*& pNewType);
 
-	static bool get(const char* code, YType*& pType);
+	static YType* parse(const char* code);
 
 	static void init();
 

@@ -3,22 +3,17 @@
 #include <vector>
 #include "../test.h"
 #include <filesystem>
+#include "YException.h"
 
 using namespace std;
-using namespace std::experimental::filesystem;
 
 int main() {
 	const char* code = "int i=10;";
-
-	for(int i=1;i<=10;i++) {
-		printf("齐老师最帅x%d!!! ", i);
+	try {
+		doTests();
+	}catch(YException* e) {
+		e->print();
 	}
-	printf("\n\n岩大天使牌计算器1.0\n");
-	printf("可以输入数字+-*/()回车以开始运算 \n");
-	printf("emm 输入其他会直接崩溃 \n");
-	printf("输入exit 以退出 \n");
-
-	doTests();
 
 	cout << endl << endl << "[[[[[end]]]]]" << endl;
 

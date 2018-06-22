@@ -9,6 +9,8 @@
 extern class YVal;
 
 // ReSharper disable once CppInconsistentNaming
-__interface Executable: CYCC {
-	virtual YVal* execute();
+class Executable: public CYCC {
+public:
+	virtual YVal* execute()=0;
+	virtual ~Executable() = default;
 };

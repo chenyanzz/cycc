@@ -1,5 +1,7 @@
 /**
 * Created by cy on 2018/5/26.
+* 
+* NOTE that in the tests, It SELDOM deletes pointer
 */
 
 #include <iostream>
@@ -11,20 +13,20 @@
 #include "YNum.h"
 #include "stringUtils.h"
 #include "YExpression.h"
+#include "YVar.h"
 
-#define RUN(exp,stat_print) if(exp==false){getLastError()->print();puts("");}else{stat_print;puts("");}
+#define RUN(expr) try{expr;}catch(YException* e){e->print();}cout<<endl;
 
 void test_YNum() {
 	cout << endl << "******** test_YNum ********" << endl;
 	YType* pType;
-	RUN(YType::get("int", pType), pType->print());
-	RUN(true, YType::Char->print());
-	RUN(YType::get("unsigned long long", pType), pType->print());
-	RUN(YType::get("signed short", pType), pType->print());
-
-	RUN(YType::get("hia int", pType), pType->print());
-	RUN(YType::get("int hia", pType), pType->print());
-	RUN(YType::get("hiahia", pType), pType->print());
+	RUN(YType::parse("int")->print());
+	RUN(YType::Char->print());
+	RUN(YType::parse("unsigned long long")->print());
+	RUN(YType::parse("signed short")->print());
+	RUN(YType::parse("hia int")->print());
+	RUN(YType::parse("int hia")->print());
+	RUN(YType::parse("hiahia")->print());
 }
 
 
@@ -56,47 +58,31 @@ void test_YVal() {
 
 	YVal* p = nullptr;
 
-	RUN(YVal::parse("\'Z\'", p), p->print());
-	delete p;
-	RUN(YVal::parse("12345",p),p->print());
-	delete p;
-	RUN(YVal::parse("-12345",p),p->print());
-	delete p;
-	RUN(YVal::parse("12345U",p),p->print());
-	delete p;
-	RUN(YVal::parse("12345L",p),p->print());
-	delete p;
-	RUN(YVal::parse("12345UL",p),p->print());
-	delete p;
-	RUN(YVal::parse("12345ULL",p),p->print());
-	delete p;
-	RUN(YVal::parse("0xabc",p),p->print());
-	delete p;
-	RUN(YVal::parse("0b101",p),p->print());
-	delete p;
-	RUN(YVal::parse("0377",p),p->print());
-	delete p;
-	RUN(YVal::parse("12345UU",p),p->print());
-	delete p;
-	RUN(YVal::parse("abc",p),p->print());
-	delete p;
-	RUN(YVal::parse("0xAzz",p),p->print());
-	delete p;
-	RUN(YVal::parse("0999",p),p->print());
-	delete p;
-	RUN(YVal::parse("!@#$%",p),p->print());
-	delete p;
+	RUN(YVal::parse("\'Z\'")->print());
+	RUN(YVal::parse("12345")->print());
+	RUN(YVal::parse("-12345")->print());
+	RUN(YVal::parse("12345U")->print());
+	RUN(YVal::parse("12345L")->print());
+	RUN(YVal::parse("12345UL")->print());
+	RUN(YVal::parse("12345ULL")->print());
+	RUN(YVal::parse("0xabc")->print());
+	RUN(YVal::parse("0b101")->print());
+	RUN(YVal::parse("0377")->print());
+	RUN(YVal::parse("12345UU")->print());
+	RUN(YVal::parse("abc")->print());
+	RUN(YVal::parse("0xAzz")->print());
+	RUN(YVal::parse("0999")->print());
+	RUN(YVal::parse("!@#$%")->print());
 
-	RUN(YVal::parse(".123",p),p->print());
-	delete p;
-	RUN(YVal::parse("222.",p),p->print());
-	delete p;
-	RUN(YVal::parse("102.123",p),p->print());
-	delete p;
-	RUN(YVal::parse("1.abc",p),p->print());
-	delete p;
+	RUN(YVal::parse(".123")->print());
+	RUN(YVal::parse("222.")->print());
+	RUN(YVal::parse("102.123")->print());
+	RUN(YVal::parse("1.abc")->print());
+	
 
-	RUN(YVal::parse("5.678", p),);
+	RUN(YVal::parse("5.678")->print());
+	
+	p = YVal::parse("1.23");
 	YVal* p1;
 	p1 = p->clone();
 	p1->print();
@@ -119,10 +105,10 @@ void test_YVal() {
 }
 
 void test_operator() {
-	YVal* p1;
-	YVal::parse("2", p1);
-	YVal* p2;
-	YVal::parse("3", p2);
+	cout << endl << "******** test_operator ********" << endl;
+
+	YVal* p1 = YVal::parse("2");
+	YVal* p2 = YVal::parse("3");
 
 	YVal* p;
 
@@ -152,6 +138,7 @@ void test_operator() {
 }
 
 void test_YExpression() {
+	cout << endl << "******** test_YExpression ********" << endl;
 	YVal* p;
 
 	auto tree = YExpression::makeTestOperationTree();
@@ -196,7 +183,7 @@ void test_YExpression() {
 	puts("");
 	delete node;
 
-	tree = YExpression::makeOperationTree("(1+2)*3");//3*3=9
+	tree = YExpression::makeOperationTree("(1+2)*3"); //3*3=9
 	tree->print();
 	cout << "=" << endl;
 	p = tree->execute();
@@ -207,15 +194,33 @@ void test_YExpression() {
 }
 
 void calculator() {
-	while (true) {
+	while(true) {
 		cout << "> ";
 		string expr;
 		cin >> expr;
-		if (expr == "exit")break;
+		if(expr == "exit")break;
 		YExpression::OperationNode* tree = YExpression::makeOperationTree(expr.c_str());
 		YVal* ans = tree->execute();
-		cout <<"= " << * (ans->castTo(YType::LongDouble)->data<long double>()) << endl;
+		cout << "= " << * (ans->castTo(YType::LongDouble)->data<long double>()) << endl;
 	}
+}
+
+void easter_egg() {
+	for(int i = 1; i <= 10; i++) {
+		printf("齐老师最帅x%d!!! ", i);
+	}
+	printf("\n\n岩大天使牌计算器1.0\n");
+	printf("可以输入数字+-*/()回车以开始运算 \n");
+	printf("emm 输入其他会直接崩溃 \n");
+	printf("输入exit 以退出 \n");
+	calculator();
+}
+
+void test_YVar() {
+	cout << endl << "******** test_YVar ********" << endl;
+
+	YVar::parse("int i")->print();
+	RUN(YVar::parse("hia a")->print());
 }
 
 void doTests() {
@@ -225,9 +230,9 @@ void doTests() {
 	// test_YNum();
 	// test_stringUtils();
 	// test_YVal();
-	//test_operator();
-	//test_YExpression();
-	calculator();
+	// test_operator();
+	// test_YExpression();
+	test_YVar();
 
 	YType::terminate();
 }

@@ -22,7 +22,7 @@ public:
 
 	static bool parse(const char* str, YExpression* pExp);
 
-	~YExpression();
+	virtual ~YExpression();
 	friend void test_YExpression();
 	friend void calculator();
 
@@ -30,29 +30,7 @@ protected:
 	//EOperatorType = val when **r_operand** is just a val to be excuted
 	enum EOperatorType { add, sub, mul, div, val, UNDEFINED };
 
-	class OperationNode: public Executable {
-	public:
-		/** Usages:
-		* - l_operand++
-		* - l_operand*r_operand
-		* - condition?l_operand:r_operand
-		* - l_operand[r_operand]
-		*/
-
-		Executable *l_operand = nullptr, *r_operand = nullptr, *condition = nullptr;
-
-		EOperatorType opType = UNDEFINED;
-
-		OperationNode(EOperatorType opType, Executable* l_operand,
-			Executable* r_operand = nullptr, Executable* condition = nullptr);
-
-		OperationNode();
-		~OperationNode();
-
-		const char* className() const override;
-		void print() override;
-		YVal* execute() override;
-	};
+	class OperationNode;
 
 	typedef unsigned int priority_t;
 	typedef std::stack<OperationNode*> operation_stack_t;
@@ -78,4 +56,28 @@ protected:
 	static constexpr bool isCharInIdentifier(const char c);
 	static priority_t getPriority(EOperatorType type);
 	static OperationNode* getFatherNode(operation_stack_t& stack, priority_t priority);
+};
+
+class YExpression::OperationNode : public Executable {
+public:
+	/** Usages:
+	* - l_operand++
+	* - l_operand*r_operand
+	* - condition?l_operand:r_operand
+	* - l_operand[r_operand]
+	*/
+
+	Executable *l_operand = nullptr, *r_operand = nullptr, *condition = nullptr;
+
+	EOperatorType opType = UNDEFINED;
+
+	OperationNode(EOperatorType opType, Executable* l_operand,
+		Executable* r_operand = nullptr, Executable* condition = nullptr);
+
+	OperationNode();
+	virtual ~OperationNode();
+
+	const char* className() const override;
+	void print() override;
+	YVal* execute() override;
 };

@@ -64,8 +64,7 @@ bool YType::add(const char* name, const int size, const BaseType baseType, YType
 }
 
 
-bool YType::get(const char* code, YType*& pType) {
-	clearLastError();
+YType* YType::parse(const char* code) {
 
 	string str_type = code;
 	const bool isSigned = isFirstSubStr(code, str_signed);
@@ -75,19 +74,16 @@ bool YType::get(const char* code, YType*& pType) {
 
 	const auto it = cyfind_if(types, [=](YType* pt) -> bool {return pt->name == str_type; });
 	if (it == types.end()) {
-		setLastError(new YTypeNotFoundException(code));
-		return false;
+		throw new YTypeNotFoundException(code);
 	}
 
 	if (isSigned) {
 		if ((*it)->base_type != cNum) {
-			setLastError(new YTypeNotFoundException(code));
-			return false;
+			throw new YTypeNotFoundException(code);
 		}
 	}
 
-	pType = *it;
-	return true;
+	return *it;
 }
 
 

@@ -6,10 +6,10 @@
 
 #pragma once
 
-// ReSharper disable once CppInconsistentNaming
-__interface CYCC 
+class CYCC 
 {
 public:
+	virtual ~CYCC() = default;
 	virtual const char* className() const =0;
     virtual void print()=0;
 };

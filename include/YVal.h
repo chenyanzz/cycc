@@ -13,6 +13,7 @@
 #include "YException.h"
 #include "common.h"
 #include "Excutable.h"
+#include "YVar.h"
 
 class YVal: public Executable {
 public:
@@ -21,7 +22,7 @@ public:
 	YVal& operator=(const YVal&) = delete;
 	YVal& operator=(YVal&&) = delete;
 
-	static bool parse(const char* s, YVal*& pVal);
+	static YVal* parse(const char* s);
 
 	YVal* clone();
 	YVal* castTo(YType* pNewType);
@@ -40,9 +41,10 @@ public:
 	static YVal* mul(YVal* v1, YVal* v2);
 	static YVal* div(YVal* v1, YVal* v2);
 
-	~YVal();
+	virtual ~YVal();
 	friend void test_YVal(); //for debug
 	friend class YExpression;
+	friend class YVar;
 
 protected:
 	YType* pType = nullptr; //can NOT be deleted when destructing
@@ -55,6 +57,7 @@ protected:
 
 	YVal() = default;
 
+	YVal(YType* ptype);
 	YVal(YType* ptype, void* pdata);
 	YVal(YVal* pVal);
 
