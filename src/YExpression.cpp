@@ -161,6 +161,9 @@ YExpression::OperationNode* YExpression::makeTestOperationTree() {
 
 //1+2*3+4
 bool YExpression::parse(const char* str, YExpression* pExp) { return true; }
+YExpression::~YExpression() {
+	delete operation_tree;
+}
 
 YVal* YExpression::execute() {
 	return nullptr;

@@ -22,7 +22,7 @@ public:
 
 	static bool parse(const char* str, YExpression* pExp);
 
-	virtual ~YExpression() = default;
+	~YExpression();
 	friend void test_YExpression();
 	friend void calculator();
 
@@ -47,7 +47,7 @@ protected:
 			Executable* r_operand = nullptr, Executable* condition = nullptr);
 
 		OperationNode();
-		virtual ~OperationNode() = default;
+		~OperationNode();
 
 		const char* className() const override;
 		void print() override;

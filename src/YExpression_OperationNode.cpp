@@ -12,6 +12,10 @@ YExpression::OperationNode::OperationNode(EOperatorType opType, Executable* l_op
 
 YExpression::OperationNode::OperationNode() {}
 
+YExpression::OperationNode::~OperationNode() {
+	delete l_operand, r_operand, condition;
+}
+
 const char* YExpression::OperationNode::className() const { return "YExpression::OperationNode"; }
 
 void YExpression::OperationNode::print() {
