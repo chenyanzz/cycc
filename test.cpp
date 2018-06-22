@@ -226,7 +226,8 @@ void doTests() {
 	// test_stringUtils();
 	// test_YVal();
 	//test_operator();
-	test_YExpression();
+	//test_YExpression();
+	calculator();
 
 	YType::terminate();
 }
