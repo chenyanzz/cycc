@@ -206,6 +206,18 @@ void test_YExpression() {
 	delete tree;
 }
 
+void calculator() {
+	while (true) {
+		cout << "> ";
+		string expr;
+		cin >> expr;
+		if (expr == "exit")break;
+		YExpression::OperationNode* tree = YExpression::makeOperationTree(expr.c_str());
+		YVal* ans = tree->execute();
+		cout <<"= " << * (ans->castTo(YType::LongDouble)->data<long double>()) << endl;
+	}
+}
+
 void doTests() {
 	YType::init();
 
@@ -214,7 +226,8 @@ void doTests() {
 	// test_stringUtils();
 	// test_YVal();
 	//test_operator();
-	test_YExpression();
+	//test_YExpression();
+	calculator();
 
 	YType::terminate();
 }

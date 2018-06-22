@@ -24,6 +24,7 @@ public:
 
 	virtual ~YExpression() = default;
 	friend void test_YExpression();
+	friend void calculator();
 
 protected:
 	//EOperatorType = val when **r_operand** is just a val to be excuted
