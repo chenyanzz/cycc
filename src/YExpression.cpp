@@ -23,6 +23,7 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	auto last = str + strlen(str);
 
 	OperationNode* r_op = new OperationNode(val, nullptr, parseIdentifier(first));
+
 	const auto const root_node = new OperationNode(val, nullptr, r_op);
 
 	operation_stack_t node_stack;
@@ -42,7 +43,16 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 		node_stack.push(new_node);
 	}
 
-	return root_node;
+	if (strcmp(r_op->className(), "YVal")) {
+		return r_op;
+	}
+
+	OperationNode* ret_node = (OperationNode*)r_op->r_operand;
+	root_node->r_operand = nullptr;
+	r_op->r_operand = nullptr;
+	delete root_node, r_op;
+
+	return ret_node;
 }
 
 //priority bigger, calc later
@@ -106,6 +116,23 @@ YExpression::EOperatorType YExpression::parseSign(const char*& str) {
 
 Executable* YExpression::parseIdentifier(const char*& str) {
 	const char* p = str;
+
+	if(*p=='(') {
+		str++;
+		while (*p != ')')p++;
+		
+		//*str='(', *p=')'
+		int len = p - str;
+		char* s_expr = new char[len + 1];
+
+		memcpy(s_expr, str, len);
+		s_expr[len] = 0;
+
+		str = p+1;
+
+		return makeOperationTree(s_expr);
+	}
+
 	while(isCharInIdentifier(*p))p++;
 
 	int len = p - str;

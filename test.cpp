@@ -196,7 +196,7 @@ void test_YExpression() {
 	puts("");
 	delete node;
 
-	tree = YExpression::makeOperationTree("1+2*3-12/4");//=1+6-3=4
+	tree = YExpression::makeOperationTree("(1+2)*3");//3*3=9
 	tree->print();
 	cout << "=" << endl;
 	p = tree->execute();
@@ -226,8 +226,7 @@ void doTests() {
 	// test_stringUtils();
 	// test_YVal();
 	//test_operator();
-	//test_YExpression();
-	calculator();
+	test_YExpression();
 
 	YType::terminate();
 }
