@@ -196,7 +196,7 @@ void test_YExpression() {
 	puts("");
 	delete node;
 
-	tree = YExpression::makeOperationTree("1+2*3");
+	tree = YExpression::makeOperationTree("1+2*3-12/4");//=1+6-3=4
 	tree->print();
 	cout << "=" << endl;
 	p = tree->execute();

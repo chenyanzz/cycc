@@ -4,7 +4,7 @@
 
 #include "YExpression.h"
 #include <iostream>
-#include <stack>
+#include <deque>
 
 using namespace std;
 
@@ -12,7 +12,7 @@ const std::unordered_map<YExpression::EOperatorType, YExpression::priority_t> YE
 	{add, 4}, {sub, 4},
 	{mul, 3}, {div, 3},
 
-	{val, 0}//the greatest priority, just to get val
+	{val, 100} //??
 };
 
 const char* YExpression::className() const { return "YExpression"; }
@@ -22,41 +22,57 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	auto first = str;
 	auto last = str + strlen(str);
 
-	OperationNode* current = parseIdentifier(first);
-	OperationNode* const root_node = current;
-	EOperatorType type;
-	stack<OperationNode*> current_branch_stack;
+	OperationNode* r_op = new OperationNode(val, nullptr, parseIdentifier(first));
+	const auto const root_node = new OperationNode(val, nullptr, r_op);
 
-	current_branch_stack.push(current);
+	operation_stack_t node_stack;
+	node_stack.push(r_op);
+
 	//forst of all needn't consider priority,just left to right
 	while((first != last) && (*first != 0)) {
+		const auto type = parseSign(first);
+		const auto priority = getPriority(type);
 
-		type = parseSign(first);
-		const priority_t priority = getPriority(type);
-
-		//TODO: find current.parent... till its sign.priority <= old then
-
-		//priority bigger, calc later
-
-		//use a stack to do this
-		//1 ==>
-		//(1+2) ==>
-		//(1+(2*3))
-
-		//there's the bug
-		while(getPriority(current_branch_stack.top()->opType) > priority) {
-			current_branch_stack.pop();
-		}
-
-		OperationNode* father_node = current_branch_stack.top();
+		OperationNode* father_node = getFatherNode(node_stack, priority);
+		
 		//build a new node instead of the parent's r_operand
 		OperationNode* new_node = new OperationNode(type, father_node->r_operand, parseIdentifier(first));
 		father_node->r_operand = new_node;
 
-		current_branch_stack.push(new_node);
+		node_stack.push(new_node);
 	}
 
 	return root_node;
+}
+
+//priority bigger, calc later
+//there's the bug
+YExpression::OperationNode* YExpression::getFatherNode(operation_stack_t& stack, priority_t priority) {
+	/*
+	
+	1*2+3
+	stack = [val,mul,add]
+	new op=4
+
+	cases:
+
+	1*2+(3* _4)
+	comes a mul=3 ==> return stack[2](add)
+
+	(1*2+3)- _4
+	comes a sub=4 ==> return stack[0](val)
+
+	=== === ===
+
+	all in all:
+	to find a priority bigger one
+	*/
+
+	while(getPriority(stack.top()->opType)<=priority) {
+		stack.pop();
+	}
+
+	return stack.top();
 }
 
 YExpression::EOperatorType YExpression::parseSign(const char*& str) {
@@ -88,7 +104,7 @@ YExpression::EOperatorType YExpression::parseSign(const char*& str) {
 	return opType;
 }
 
-YExpression::OperationNode* YExpression::parseIdentifier(const char*& str) {
+Executable* YExpression::parseIdentifier(const char*& str) {
 	const char* p = str;
 	while(isCharInIdentifier(*p))p++;
 
@@ -102,7 +118,7 @@ YExpression::OperationNode* YExpression::parseIdentifier(const char*& str) {
 	if(!YVal::parse(s_identifier, pVal))return nullptr;
 
 	str = p;
-	return new OperationNode(val, nullptr,pVal);
+	return pVal;
 }
 
 constexpr bool YExpression::isCharInIdentifier(const char c) {

@@ -54,6 +54,8 @@ protected:
 	};
 
 	typedef unsigned int priority_t;
+	typedef std::stack<OperationNode*> operation_stack_t;
+
 protected:
 	const std::string s_expr;
 	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
@@ -68,10 +70,11 @@ protected:
 
 	//currently just parse str as a YVal
 	//TODO: parse YFunction s
-	//it returns a node which optype=val
-	static OperationNode* parseIdentifier(const char*& str);
+	
+	//it returns a YVal* for literal
+	static Executable* parseIdentifier(const char*& str);
 
 	static constexpr bool isCharInIdentifier(const char c);
 	static priority_t getPriority(EOperatorType type);
-
+	static OperationNode* getFatherNode(operation_stack_t& stack, priority_t priority);
 };

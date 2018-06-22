@@ -42,27 +42,40 @@ YVal* YExpression::OperationNode::execute() {
 
 	//todo:  that || and && are short-circuited so canNOT exec(r_operand) first!
 	//if(opType!=conditiond3,or,and) do belowings
-
-	YVal* l_val = l_operand->execute();
-	YVal* r_val = r_operand->execute();
+	
+	
 	YVal* ret = nullptr;
 
 	switch(opType) {
-	case add:
+	case add: {
+		YVal* l_val = l_operand->execute();
+		YVal* r_val = r_operand->execute();
 		ret = YVal::add(l_val, r_val);
 		break;
-	case sub:
+	}
+	case sub: {
+		YVal* l_val = l_operand->execute();
+		YVal* r_val = r_operand->execute();
 		ret = YVal::sub(l_val, r_val);
 		break;
-	case mul:
+	}
+	case mul: {
+		YVal* l_val = l_operand->execute();
+		YVal* r_val = r_operand->execute();
 		ret = YVal::mul(l_val, r_val);
 		break;
-	case div:
+	}
+	case div: {
+		YVal* l_val = l_operand->execute();
+		YVal* r_val = r_operand->execute();
 		ret = YVal::div(l_val, r_val);
 		break;
-	case val:
+	}
+	case val: {
+		YVal* r_val = r_operand->execute();
 		ret = r_val;
 		break;
+	}
 	case UNDEFINED:
 	default:
 		throw YException("opType undefined");
