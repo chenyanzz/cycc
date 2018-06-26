@@ -27,8 +27,15 @@ public:
 	friend void calculator();
 
 protected:
+
 	//EOperatorType = val when **r_operand** is just a val to be excuted
-	enum EOperatorType { add, sub, mul, div, val, UNDEFINED };
+	//NOTE that if there's only one operand, then it must be in the r_operand place
+	enum EOperatorType {
+		add, sub, mul, div, val,//op _ op
+		neg,front_inc,front_dec,//_ op
+		back_inc, back_dec,//op _
+		UNDEFINED, NOTHING
+	};
 
 	class OperationNode;
 
@@ -42,6 +49,7 @@ protected:
 
 protected:
 	YExpression(const char* expr);
+	static EOperatorType parseFrefix(const char*& str);
 	static OperationNode* makeOperationTree(const char* str);
 	static OperationNode* makeTestOperationTree();
 
@@ -49,16 +57,15 @@ protected:
 
 	//currently just parse str as a YVal
 	//TODO: parse YFunction s
-	
+
 	//it returns a YVal* for literal
 	static Executable* parseIdentifier(const char*& str);
-
-	static constexpr bool isCharInIdentifier(const char c);
+	static constexpr bool isCharInIdentifier(char c);
 	static priority_t getPriority(EOperatorType type);
 	static OperationNode* getFatherNode(operation_stack_t& stack, priority_t priority);
 };
 
-class YExpression::OperationNode : public Executable {
+class YExpression::OperationNode: public Executable {
 public:
 	/** Usages:
 	* - l_operand++

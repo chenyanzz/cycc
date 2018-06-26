@@ -36,9 +36,9 @@ YVar* YVar::parse(const char* str) {
 
 	string name = string(newString(type_end + 1, str_end + 1));
 	if(!isAvailableVarName(name))
-		throw new 
+		throw new YNotAAvailableNameException(name.c_str());
 
-		return new YVar(name, new YVal(type));
+	return new YVar(name, new YVal(type));
 }
 
 YVal* YVar::execute() { return nullptr; }

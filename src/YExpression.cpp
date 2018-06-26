@@ -12,12 +12,45 @@ using namespace std;
 const std::unordered_map<YExpression::EOperatorType, YExpression::priority_t> YExpression::operator_priority = {
 	{add, 4}, {sub, 4},
 	{mul, 3}, {div, 3},
+	{neg, 2}, {front_inc, 2}, {back_inc, 2}, {front_dec, 2}, {back_inc, 2},
 
-	{val, 100} //??
+	{val, 100} //max
 };
 
 const char* YExpression::className() const { return "YExpression"; }
 void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}"; }
+
+YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
+	switch(str[0]) {
+	case '-': {
+		const char c = str[1];
+		if(c == '-') {
+			str += 2;
+			return front_dec;
+		}
+
+		//don't see -1 as -(1)
+		//just see it as number
+		if((c >= '0' && c <= '9') || c == '.') {
+			return NOTHING;
+		}
+
+		str += 1;
+		return neg;
+	}
+	case '+': {
+		const char c = str[1];
+		if(c == '+') {
+			str += 2;
+			return front_inc;
+		}
+
+		str += 1;
+		return NOTHING;
+	}
+	}
+	return NOTHING;
+}
 
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	auto first = str;
@@ -33,18 +66,41 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	//forst of all needn't consider priority,just left to right
 	while((first != last) && (*first != 0)) {
 		const auto type = parseSign(first);
+
+		if (type == UNDEFINED)throw new YParseFailedException("YExpression::OperationNode", first, "unknown sign in expression");
+
 		const auto priority = getPriority(type);
 
 		OperationNode* father_node = getFatherNode(node_stack, priority);
-		
-		//build a new node instead of the parent's r_operand
-		OperationNode* new_node = new OperationNode(type, father_node->r_operand, parseIdentifier(first));
-		father_node->r_operand = new_node;
 
-		node_stack.push(new_node);
+
+		switch(type) {
+		case add: case sub: case mul: case div: {
+			//build a new node instead of the parent's r_operand
+
+			//case 2-operand operators
+			const auto prefix_type = parseFrefix(first);
+			const auto perfix_priority = getPriority(type);
+
+			Executable* r_operand = parseIdentifier(first);
+
+			switch(prefix_type) {
+			case neg: {
+				//r_operand = -(r_operand)
+				OperationNode* node = new OperationNode(prefix_type, nullptr, r_operand);
+				r_operand = node;
+				node_stack.push(node);
+			}
+			}
+			OperationNode* new_node = new OperationNode(type, father_node->r_operand, r_operand);
+			father_node->r_operand = new_node;
+			node_stack.push(new_node);
+
+		}
+		}
 	}
 
-	if (strcmp(r_op->className(), "YVal")) {
+	if(strcmp(r_op->className(), "YVal")) {
 		return r_op;
 	}
 
@@ -56,8 +112,6 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	return ret_node;
 }
 
-//priority bigger, calc later
-//there's the bug
 YExpression::OperationNode* YExpression::getFatherNode(operation_stack_t& stack, priority_t priority) {
 	/*
 	
@@ -79,7 +133,7 @@ YExpression::OperationNode* YExpression::getFatherNode(operation_stack_t& stack,
 	to find a priority bigger one
 	*/
 
-	while(getPriority(stack.top()->opType)<=priority) {
+	while(getPriority(stack.top()->opType) <= priority) {
 		stack.pop();
 	}
 
@@ -87,6 +141,8 @@ YExpression::OperationNode* YExpression::getFatherNode(operation_stack_t& stack,
 }
 
 YExpression::EOperatorType YExpression::parseSign(const char*& str) {
+	while (*str == ' ' || *str == '\n')str++;
+
 	EOperatorType opType = UNDEFINED;
 	switch(*str) {
 	case 0:
@@ -116,25 +172,49 @@ YExpression::EOperatorType YExpression::parseSign(const char*& str) {
 }
 
 Executable* YExpression::parseIdentifier(const char*& str) {
+
+	while (*str == ' ' || *str == '\n')str++;
+
 	const char* p = str;
 
-	if(*p=='(') {
-		while (*p != ')')p++;
-		
-		//*str='(', *p=')'
-		char* s_expr = newString(str+1, p);
+	//(...)
+	if(*p == '(') {
+		while(*p != ')')p++;
 
-		str = p+1;
+		//*str='(', *p=')'
+		char* s_expr = newString(str + 1, p);
+
+		str = p + 1;
 
 		return makeOperationTree(s_expr);
 	}
 
-	while(isCharInIdentifier(*p))p++;
 
-	char* s_identifier = newString(str,p);
+	/*for number*/
 
+	if(*p == '+')p++;
+
+	//    -1, -1.23
+	if(*p == '-')p++;
+	//==> 1, 1.23
+	while(*p >= '0' && *p <= '9') p++;
+
+	//deal -1
+	if(*p != '.') {
+		char* s_int = newString(str, p);
+		str = p;
+		return YVal::parseInt(s_int);
+	}
+	//*p=='.'
+	p++;
+
+	//deal -1.23
+	while(*p >= '0' && *p <= '9') p++;
+
+	char* s_decimal = newString(str, p);
 	str = p;
-	return YVal::parse(s_identifier);
+	return YVal::parseDecimal(s_decimal);
+
 }
 
 //todo: there is a bug that -1 struct.member goes wrong
@@ -171,6 +251,7 @@ YExpression::OperationNode* YExpression::makeTestOperationTree() {
 
 //1+2*3+4
 bool YExpression::parse(const char* str, YExpression* pExp) { return true; }
+
 YExpression::~YExpression() {
 	delete operation_tree;
 }

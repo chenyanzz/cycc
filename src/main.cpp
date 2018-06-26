@@ -13,10 +13,10 @@ int main() {
 		doTests();
 	}catch(YException* e) {
 		e->print();
+		delete e;
 	}
 
 	cout << endl << endl << "[[[[[end]]]]]" << endl;
 
-	system("pause");
 	return 0;
 }

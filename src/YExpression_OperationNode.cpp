@@ -19,6 +19,11 @@ YExpression::OperationNode::~OperationNode() {
 const char* YExpression::OperationNode::className() const { return "YExpression::OperationNode"; }
 
 void YExpression::OperationNode::print() {
+
+	if (opType == val) {
+		r_operand->print();
+		return;
+	}
 	cout << "(";
 	if (l_operand) l_operand->print();
 
@@ -35,8 +40,6 @@ void YExpression::OperationNode::print() {
 	case div:
 		cout << "/";
 		break;
-	case val:
-		break;
 	}
 	if(r_operand) r_operand->print();
 	cout << ")";
@@ -44,9 +47,9 @@ void YExpression::OperationNode::print() {
 
 YVal* YExpression::OperationNode::execute() {
 
-	//todo:  that || and && are short-circuited so canNOT exec(r_operand) first!
-	//if(opType!=conditiond3,or,and) do belowings
-	
+	//why calc in case scope:
+	//cuz operators some do from l to r,while others do from r to l
+	//also there are || &&
 	
 	YVal* ret = nullptr;
 
@@ -74,6 +77,10 @@ YVal* YExpression::OperationNode::execute() {
 		YVal* r_val = r_operand->execute();
 		ret = YVal::div(l_val, r_val);
 		break;
+	}
+	case neg: {
+		YVal* r_val = r_operand->execute();
+		ret = YVal::neg(r_val);
 	}
 	case val: {
 		YVal* r_val = r_operand->execute();

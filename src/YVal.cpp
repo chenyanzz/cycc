@@ -13,95 +13,94 @@ using namespace std;
 
 #define CHECK_NULLPTR(param) if((param)==nullptr){throw(new YNullptrException(#param));}
 
-//do with long double* v1 and v2
-#define implement_operation(stat)	{	\
+//stat: do with (long double*) v1, v2
+#define implement_operation2(stat)	{	\
 const auto longdouble_v1 = v1->castTo(YType::LongDouble);	\
 const auto longdouble_v2 = v2->castTo(YType::LongDouble);	\
-const auto v1 = *longdouble_v1->data<long double>();	\
-const auto v2 = *longdouble_v2->data<long double>();	\
+const auto v1 = longdouble_v1->data<long double>();	\
+const auto v2 = longdouble_v2->data<long double>();	\
 delete longdouble_v1;	\
 delete longdouble_v2;	\
 auto* v_result = new long double(stat);	\
 auto result = new YVal(YType::LongDouble, v_result);	\
+delete v_result;	\
 return result;	\
 }
 
+//stat: do with (long double*) v
+#define implement_operation1(stat)	{	\
+const auto longdouble_v = v->castTo(YType::LongDouble);	\
+const auto v = longdouble_v->data<long double>();	\
+delete longdouble_v;	\
+auto* v_result = new long double(stat);	\
+auto result = new YVal(YType::LongDouble, v_result);	\
+delete v_result;	\
+return result;	\
+}
+
+//stat: do with (long double)num = pVal->data<pType>()
+#define getNum(pType,pVal,stat){	\
+long double num=0;	\
+if (pType == YType::Float)num = pVal->data<float>();	\
+else if (pType == YType::Double)num = pVal->data<double>();	\
+else if (pType == YType::LongDouble)num = pVal->data<long double>();	\
+else if (pType == YType::Char)num = (int)pVal->data<char>();/*do not show as a char*/	\
+else if (pType == YType::Short)num = pVal->data<short>();	\
+else if (pType == YType::Int)num = pVal->data<int>();	\
+else if (pType == YType::Long)num = pVal->data<long>();	\
+else if (pType == YType::LongLong)num = pVal->data<long long>();	\
+else if (pType == YType::UChar)num = (int)pVal->data<unsigned char>();/*do not show as a char*/	\
+else if (pType == YType::UShort)num = pVal->data<unsigned short>();	\
+else if (pType == YType::UInt)num = pVal->data<unsigned int>();	\
+else if (pType == YType::ULong)num = pVal->data<unsigned long>();	\
+else if (pType == YType::ULongLong)num = pVal->data<unsigned long long>();	\
+stat;	\
+}
+
+
+#define setNum(pVal,equal_what){	\
+if (pVal->pType == YType::Float)pVal->data<float>() = equal_what;	\
+else if (pVal->pType == YType::Double)pVal->data<double>() = equal_what;	\
+else if (pVal->pType == YType::LongDouble)pVal->data<long double>() = equal_what;	\
+else if (pVal->pType == YType::Char)pVal->data<char>() = equal_what;	\
+else if (pVal->pType == YType::Short)pVal->data<short>() = equal_what;	\
+else if (pVal->pType == YType::Int)pVal->data<int>() = equal_what;	\
+else if (pVal->pType == YType::Long)pVal->data<long>() = equal_what;	\
+else if (pVal->pType == YType::LongLong)pVal->data<long long>() = equal_what;	\
+else if (pVal->pType == YType::UChar)pVal->data<unsigned char>() = equal_what;	\
+else if (pVal->pType == YType::UShort)pVal->data<unsigned short>() = equal_what;	\
+else if (pVal->pType == YType::UInt)pVal->data<unsigned int>() = equal_what;	\
+else if (pVal->pType == YType::ULong)pVal->data<unsigned long>() = equal_what;	\
+else if (pVal->pType == YType::ULongLong)pVal->data<unsigned long long>() = equal_what;	\
+}
 
 const char* YVal::className() const {
 	return "YVal";
 }
 
-
 void YVal::print() {
 	if(pType->base_type == YType::cNum) {
-		const auto pNum = (YNum*)pType;
-		if(pNum->bIsDecimal) {
-			cout << "[YVal]{num=";
-			switch(pType->size) {
-			case 4:
-				cout << *(float*)pData;
-				break;
-			case 8:
-				cout << *(double*)pData;
-				break;
-			case 16:
-				cout << *(long double*)pData;
-				break;
-			}
-			cout << ", type=";
-			pType->print();
-			cout << "}";
-		} else {
-			cout << "[YVal]{data=0x";
-			switch(pType->size) {
-			case 1:
-				cout << hex << (short)*(unsigned char*)pData; //to show char as a number
-				break;
-			case 2:
-				cout << hex << *(unsigned short*)pData;
-				break;
-			case 4:
-				cout << hex << *(unsigned int*)pData;
-				break;
-			case 8:
-				cout << hex << *(unsigned long long*)pData;
-				break;
-			}
-			cout << ", type=";
-			pType->print();
-			cout << "}";
-		}
+		getNum(pType, this, cout << num);
 	}
 }
 
 YVal* YVal::parse(const char* s) {
-	YVal* pVal = new YVal;
-
 	if(s[0] == '+') s++;
 
-	char c = *s;
-	//pass if c is a identifier
-	if((c >= '0' && c <= '9') || c == '-' || c == '\'') {
-		if(parseDecimal(s, pVal)) return pVal;
-		if(parseInt(s, pVal)) return pVal;
-	}
-	delete pVal;
+	try { return parseDecimal(s); } catch(YException* e) { delete e; }
+	try { return parseInt(s); } catch(YException* e) { delete e; }
 
 	throw new YParseFailedException("YVal", s, "not a proper literal");
 }
 
-
-bool YVal::parseInt(const char* s, YVal* pVal) {
-	CHECK_NULLPTR(pVal);
-
+YVal* YVal::parseInt(const char* s) {
 	YType* p_type = nullptr;
 
 	//for char val
 	if(s[0] == '\'' && s[2] == '\'') {
-		pVal->pType = YNum::Char;
-		pVal->pData = new byte[pVal->pType->size];
-		*(char*)pVal->pData = s[1];
-		return true;
+		YVal* pVal = new YVal(YNum::Char);
+		pVal->data<char>() = s[1];
+		return pVal;
 	}
 
 	//for int val
@@ -168,9 +167,7 @@ bool YVal::parseInt(const char* s, YVal* pVal) {
 			len -= 2;
 			p_type = YType::LongLong;
 		} else if(isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
-			//throw new YInvalidCharException(s, len - 1, "suffix \"UU\" is illegal");
-			return false;
-
+			throw new YInvalidCharException(s, len - 1, "suffix \"UU\" is illegal");
 		} else if(isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
 			len--;
 			p_type = YType::Long;
@@ -194,13 +191,11 @@ bool YVal::parseInt(const char* s, YVal* pVal) {
 		} else if(hexletter >= 'a' && hexletter <= 'f') {
 			bitval = hexletter - 'a' + 10;
 		} else {
-			// throw(new YInvalidCharException(s, pc_num - buf, "illegal char in a number body"));
-			return false;
+			throw(new YInvalidCharException(s, pc_num - buf, "illegal char in a number body"));
 		}
 
 		if(bitval >= radix) {
-			// throw(new YInvalidCharException(s, pc_num - buf, "illegal char in a number body"));
-			return false;
+			throw(new YInvalidCharException(s, pc_num - buf, "illegal char in a number body"));
 		}
 
 		num *= radix;
@@ -214,55 +209,54 @@ bool YVal::parseInt(const char* s, YVal* pVal) {
 		num = ~(num & ~(1 << (sizeof(num) - 1))) + 1;
 	}
 
-	pVal->pType = p_type;
-	pVal->pData = new byte[pVal->pType->size];
+	YVal* pVal = new YVal(p_type);
 
 	switch(p_type->size) {
 	case 1:
-		*(unsigned char*)pVal->pData = num;
+		pVal->data<unsigned char>() = num;
 		break;
 	case 2:
-		*(unsigned short*)pVal->pData = num;
+		pVal->data<unsigned short>() = num;
 		break;
 	case 4:
-		*(unsigned int*)pVal->pData = num;
+		pVal->data<unsigned int>() = num;
 		break;
 	case 8:
-		*(unsigned long long*)pVal->pData = num;
+		pVal->data<unsigned long long>() = num;
 		break;
 	}
 
-	return true;
+	return pVal;
 }
 
-
-YType* YVal::type() {
-	return pType;
-}
+YType* YVal::type() { return pType; }
 
 YVal* YVal::execute() { return this->clone(); }
 
 YVal* YVal::add(YVal* v1, YVal* v2) {
-	implement_operation(v1 + v2);
+	implement_operation2(v1 + v2);
 }
 
 YVal* YVal::sub(YVal* v1, YVal* v2) {
-	implement_operation(v1 - v2);
+	implement_operation2(v1 - v2);
 }
 
 YVal* YVal::mul(YVal* v1, YVal* v2) {
-	implement_operation(v1 * v2);
+	implement_operation2(v1 * v2);
 }
 
 YVal* YVal::div(YVal* v1, YVal* v2) {
-	implement_operation(v1 / v2);
+	implement_operation2(v1 / v2);
 }
 
-bool YVal::parseDecimal(const char* s, YVal* pVal) {
-	CHECK_NULLPTR(pVal);
+YVal* YVal::neg(YVal* v) {
+	implement_operation1(-v);
+}
+
+YVal* YVal::parseDecimal(const char* s) {
+
 	if(!strcmp(s, ".")) {
-		// throw(new YException("[YException] \"%s\" is not a proper decimal", s));
-		return false;
+		throw new YException("[YException] \"%s\" is not a proper decimal", s);
 	}
 
 	const size_t buf_size = 100;
@@ -290,8 +284,7 @@ bool YVal::parseDecimal(const char* s, YVal* pVal) {
 		isLastSubStr(pc_num, len, "LL", 2) || isLastSubStr(pc_num, len, "ll", 2) ||
 		isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
 
-		//throw(new YInvalidCharException(s, len - 1, "the suffix is illegal for decimal"));
-		return false;
+		throw new YInvalidCharException(s, len - 1, "the suffix is illegal for decimal");
 	}
 
 	YType* ptype = YType::Double;
@@ -308,13 +301,10 @@ bool YVal::parseDecimal(const char* s, YVal* pVal) {
 
 	while(*pc_dot != '.') {
 		if(*pc_dot == 0) {
-			//throw(new YException("[YException] \"%s\" is not a proper decimal", buf));
-			return false;
+			throw new YException("[YException] \"%s\" is not a proper decimal", buf);
 		}
 		pc_dot++;
 	}
-
-	YVal buf_val;
 
 	unsigned long long int_val = 0;
 
@@ -324,8 +314,9 @@ bool YVal::parseDecimal(const char* s, YVal* pVal) {
 	strcat(buf2, "ll");
 
 	if(pc_dot != pc_num) {
-		if(!parseInt(buf2, &buf_val)) return false;
-		int_val = *(unsigned long long*)buf_val.pData;
+		YVal* buf_val = parseInt(buf2);
+		int_val = buf_val->data<unsigned long long>();
+		delete buf_val;
 	}
 
 	/*decimal part*/
@@ -337,145 +328,47 @@ bool YVal::parseDecimal(const char* s, YVal* pVal) {
 			dec_val += *pc - '0';
 			dec_val /= 10;
 		} else {
-			//throw(new YInvalidCharException(s, pc - buf, "illegal char in a number body"));
-			return false;
+			throw new YInvalidCharException(s, pc - buf, "illegal char in a number body");
 		}
 	}
 
 	long double val = dec_val + int_val;
 
-	pVal->pType = ptype;
-	pVal->pData = new byte[pVal->pType->size];
+	YVal* pVal = new YVal(ptype);
 
 	if(bNegative)val = -val;
 
-	switch(ptype->size) {
-	case 4:
-		*(float*)pVal->pData = val;
-		break;
-	case 8:
-		*(double*)pVal->pData = val;
-		break;
-	case 16:
-		*(long double*)pVal->pData = val;
-		break;
-	}
+	if(ptype == YType::Float) pVal->data<float>() = val;
+	else if(ptype == YType::Double) pVal->data<double>() = val;
+	else if(ptype == YType::LongDouble) pVal->data<long double>() = val;
 
-	return true;
+	return pVal;
 }
 
 YVal* YVal::castTo(YType* pNewType) {
-	YType* p_old_type = pType;
-	byte* p_old_data = pData;
+	auto pOldType = pType;
+	byte* pOldData = pData;
 
 	//the cases without a memory-change:
 	//anyone is not a number
 	//or both are int's
 	if(
 		pNewType->base_type != YType::cNum ||
-		p_old_type->base_type != YType::cNum ||
-		(!((YNum*)p_old_type)->bIsDecimal && !((YNum*)pNewType)->bIsDecimal)
+		pOldType->base_type != YType::cNum ||
+		(!((YNum*)pOldType)->bIsDecimal && !((YNum*)pNewType)->bIsDecimal)
 	) {
-		return new YVal(pNewType, p_old_data);
+		return new YVal(pNewType, pOldData);
 	}
 
 	//deal with the cast between int and decimal
-	YVal* pNewVal = new YVal;
-	pNewVal->pType = pNewType;
+	YVal* pNewVal = new YVal(pNewType);
 
 	if(pNewType->base_type == YType::cNum) {
-		YNum* pOldNum = (YNum*)p_old_type;
-		YNum* pNewNum = (YNum*)pNewType;
 
-		if(pOldNum->bIsDecimal && pNewNum->bIsDecimal) {
-			//from int to dec
-			long double oldval = 0.0l;
-			switch(p_old_type->size) {
-			case 4:
-				oldval = *(float*)p_old_data;
-				break;
-			case 8:
-				oldval = *(double*)p_old_data;
-				break;
-			case 16:
-				oldval = *(long double*)p_old_data;
-				break;
-			}
+		long double oldval = 0.0l;
 
-			void* p = nullptr;
-			switch(pNewType->size) {
-			case 4: {
-				p = (float*)new byte[YType::Float->size];
-				*(float*)p = oldval;
-				break;
-			}
-			case 8: {
-				p = (double*)new byte[YType::Double->size];
-				*(double*)p = oldval;
-				break;
-			}
-			case 16: {
-				p = (long double*)new byte[YType::LongDouble->size];
-				*(long double*)p = oldval;
-				break;
-			}
-
-			}
-			pNewVal->pData = (byte*)p;
-		} else if(pOldNum->bIsDecimal) {
-			//from dec to int
-			long long* pll = (long long*)new byte[YType::LongLong->size];
-			switch(p_old_type->size) {
-			case 4:
-				*pll = *(float*)p_old_data;
-				break;
-			case 8:
-				*pll = *(double*)p_old_data;
-				break;
-			case 16:
-				*pll = *(long double*)p_old_data;
-				break;
-			}
-			pNewVal->pData = (byte*)pll;
-		} else {
-			//from int to dec
-			long long oldval = 0;
-			switch(p_old_type->size) {
-			case 1:
-				oldval = *(unsigned char*)p_old_data;
-				break;
-			case 2:
-				oldval = *(unsigned short*)p_old_data;
-				break;
-			case 4:
-				oldval = *(unsigned int*)p_old_data;
-				break;
-			case 8:
-				oldval = *(unsigned long long*)p_old_data;
-				break;
-			}
-
-			void* p = nullptr;
-			switch(pNewType->size) {
-			case 4: {
-				p = (float*)new byte[YType::Float->size];
-				*(float*)p = oldval;
-				break;
-			}
-			case 8: {
-				p = (double*)new byte[YType::Double->size];
-				*(double*)p = oldval;
-				break;
-			}
-			case 16: {
-				p = (long double*)new byte[YType::LongDouble->size];
-				*(long double*)p = oldval;
-				break;
-			}
-
-			}
-			pNewVal->pData = (byte*)p;
-		}
+		getNum(pType, this, oldval = num);
+		setNum(pNewVal, oldval);
 	}
 
 	return pNewVal;
@@ -503,4 +396,4 @@ YVal::~YVal() {
 }
 
 template <typename Type>
-Type*& YVal::data() { return (Type*&)pData; }
+Type& YVal::data() { return *(Type*)pData; }

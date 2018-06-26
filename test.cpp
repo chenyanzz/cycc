@@ -101,7 +101,10 @@ void test_YVal() {
 	delete p1;
 	puts("");
 
-
+	p = YVal::parse("-123");
+	p1 = p->castTo(YType::LongDouble);
+	p1->print();
+	puts("");
 }
 
 void test_operator() {
@@ -139,14 +142,14 @@ void test_operator() {
 
 void test_YExpression() {
 	cout << endl << "******** test_YExpression ********" << endl;
-	YVal* p;
+	YVal* p=nullptr;
 
 	auto tree = YExpression::makeTestOperationTree();
-	tree->print();
-	cout << "=" << endl;
-	p = tree->execute();
-	p->print();
-	puts("");
+	// tree->print();
+	// cout << "=" << endl;
+	// p = tree->execute();
+	// p->print();
+	// puts("");
 	delete p;
 	delete tree;
 
@@ -159,14 +162,6 @@ void test_YExpression() {
 
 	endl(cout);
 
-	cout << YExpression::isCharInIdentifier('1') << " ";
-	cout << YExpression::isCharInIdentifier('z') << " ";
-	cout << YExpression::isCharInIdentifier('A') << " ";
-	cout << YExpression::isCharInIdentifier('_') << " ";
-	cout << YExpression::isCharInIdentifier('$') << " ";
-
-	endl(cout);
-
 	cout << YExpression::getPriority(YExpression::add) << " ";
 	cout << YExpression::getPriority(YExpression::sub) << " ";
 	cout << YExpression::getPriority(YExpression::mul) << " ";
@@ -174,7 +169,7 @@ void test_YExpression() {
 
 	endl(cout);
 
-	s = "12.34+56.78";
+	s = "-12.34+-56.78";
 	YExpression::OperationNode* node = new YExpression::OperationNode;
 	node->l_operand = (YVal*)YExpression::parseIdentifier(s);
 	node->opType = YExpression::parseSign(s);
@@ -183,7 +178,7 @@ void test_YExpression() {
 	puts("");
 	delete node;
 
-	tree = YExpression::makeOperationTree("(1+2)*3"); //3*3=9
+	tree = YExpression::makeOperationTree("(1+-4)*-3"); //-3*-3=9
 	tree->print();
 	cout << "=" << endl;
 	p = tree->execute();
@@ -196,12 +191,13 @@ void test_YExpression() {
 void calculator() {
 	while(true) {
 		cout << "> ";
-		string expr;
-		cin >> expr;
-		if(expr == "exit")break;
-		YExpression::OperationNode* tree = YExpression::makeOperationTree(expr.c_str());
+		const int buf_size = 100;
+		char buf[buf_size];
+		cin.getline(buf,buf_size);
+		if(!strcmp(buf,"exit"))break;
+		YExpression::OperationNode* tree = YExpression::makeOperationTree(buf);
 		YVal* ans = tree->execute();
-		cout << "= " << * (ans->castTo(YType::LongDouble)->data<long double>()) << endl;
+		cout << "= " << ans->castTo(YType::LongDouble)->data<long double>() << endl;
 	}
 }
 
@@ -232,7 +228,9 @@ void doTests() {
 	// test_YVal();
 	// test_operator();
 	// test_YExpression();
-	test_YVar();
+	// test_YVar();
+
+	calculator();
 
 	YType::terminate();
 }
