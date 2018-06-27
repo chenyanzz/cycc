@@ -16,11 +16,11 @@
 
 class YExpression: public Executable {
 public:
-	YVal* execute();
+	YVal* execute() override;
 	void print() override;
 	const char* className() const override;
 
-	static bool parse(const char* str, YExpression* pExp);
+	static YExpression* parse(const char* str);
 
 	virtual ~YExpression();
 	friend void test_YExpression();
@@ -31,10 +31,10 @@ protected:
 	//EOperatorType = val when **r_operand** is just a val to be excuted
 	//NOTE that if there's only one operand, then it must be in the r_operand place
 	enum EOperatorType {
-		add, sub, mul, div, val,//op _ op
-		neg,front_inc,front_dec,//_ op
-		back_inc, back_dec,//op _
-		UNDEFINED, NOTHING
+		add, sub, mul, div, val, //op _ op
+		neg, front_inc, front_dec, //_ op
+		back_inc, back_dec, //op _
+		NOTHING
 	};
 
 	class OperationNode;
@@ -43,26 +43,31 @@ protected:
 	typedef std::stack<OperationNode*> operation_stack_t;
 
 protected:
-	const std::string s_expr;
 	static const std::unordered_map<EOperatorType, priority_t> operator_priority;
+	
+	std::string s_expr;
 	OperationNode* operation_tree = nullptr;
 
 protected:
-	YExpression(const char* expr);
-	static EOperatorType parseFrefix(const char*& str);
 	static OperationNode* makeOperationTree(const char* str);
 	static OperationNode* makeTestOperationTree();
 
+	//@throws YParseFailedException
 	static EOperatorType parseSign(const char*& str);
+
+	//@retval NOTHING for failed
+	static EOperatorType parseFrefix(const char*& str);
 
 	//currently just parse str as a YVal
 	//TODO: parse YFunction s
 
-	//it returns a YVal* for literal
+	//@return YVal* for literal
 	static Executable* parseIdentifier(const char*& str);
-	static constexpr bool isCharInIdentifier(char c);
 	static priority_t getPriority(EOperatorType type);
+	//from stack.top tillpriority
 	static OperationNode* getFatherNode(operation_stack_t& stack, priority_t priority);
+
+	static void skipBlank(const char*& str);
 };
 
 class YExpression::OperationNode: public Executable {
@@ -76,9 +81,9 @@ public:
 
 	Executable *l_operand = nullptr, *r_operand = nullptr, *condition = nullptr;
 
-	EOperatorType opType = UNDEFINED;
+	EOperatorType opType;
 
-	OperationNode(EOperatorType opType, Executable* l_operand,
+	OperationNode(EOperatorType opType, Executable* l_operand = nullptr,
 		Executable* r_operand = nullptr, Executable* condition = nullptr);
 
 	OperationNode();

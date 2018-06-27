@@ -17,6 +17,8 @@
 
 class YVal: public Executable {
 public:
+
+	//@throws YParseFailedException
 	static YVal* parse(const char* s);
 
 	YVal* clone();
@@ -48,8 +50,9 @@ protected:
 	byte* pData = nullptr; //pData is auto-destroyed
 
 protected:
-	//NOTE that pVal must be available
+	//@throws YInvalidCharException
 	static YVal* parseInt(const char* s);
+	//@throws YInvalidCharException
 	static YVal* parseDecimal(const char* s);
 
 	YVal() = default;

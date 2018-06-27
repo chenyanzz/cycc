@@ -49,6 +49,7 @@ public:
 public:
 	static bool add(const char* name, int size, BaseType baseType, YType*& pNewType);
 
+	//@throws YTypeNotFoundException
 	static YType* parse(const char* code);
 
 	static void init();

@@ -9,14 +9,9 @@ using namespace std;
 
 int main() {
 	const char* code = "int i=10;";
-	try {
-		doTests();
-	}catch(YException* e) {
-		e->print();
-		delete e;
-	}
+	doTests();
 
 	cout << endl << endl << "[[[[[end]]]]]" << endl;
-
+	while(true);
 	return 0;
 }

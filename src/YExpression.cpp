@@ -19,37 +19,14 @@ const std::unordered_map<YExpression::EOperatorType, YExpression::priority_t> YE
 
 const char* YExpression::className() const { return "YExpression"; }
 void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}"; }
+YVal* YExpression::execute() { return operation_tree->execute(); }
+YExpression::~YExpression() { delete operation_tree; }
 
-YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
-	switch(str[0]) {
-	case '-': {
-		const char c = str[1];
-		if(c == '-') {
-			str += 2;
-			return front_dec;
-		}
-
-		//don't see -1 as -(1)
-		//just see it as number
-		if((c >= '0' && c <= '9') || c == '.') {
-			return NOTHING;
-		}
-
-		str += 1;
-		return neg;
-	}
-	case '+': {
-		const char c = str[1];
-		if(c == '+') {
-			str += 2;
-			return front_inc;
-		}
-
-		str += 1;
-		return NOTHING;
-	}
-	}
-	return NOTHING;
+YExpression* YExpression::parse(const char* str) {
+	auto exp = new YExpression;
+	exp->s_expr = str;
+	exp->operation_tree = makeOperationTree(str);
+	return exp;
 }
 
 YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
@@ -64,44 +41,37 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 	node_stack.push(r_op);
 
 	//forst of all needn't consider priority,just left to right
-	while((first != last) && (*first != 0)) {
+	while(*first != 0) {
+
 		const auto type = parseSign(first);
-
-		if (type == UNDEFINED)throw new YParseFailedException("YExpression::OperationNode", first, "unknown sign in expression");
-
 		const auto priority = getPriority(type);
-
 		OperationNode* father_node = getFatherNode(node_stack, priority);
 
+		OperationNode* new_node = new OperationNode(type, father_node->r_operand);
+		father_node->r_operand = new_node;
+		node_stack.push(new_node);
 
-		switch(type) {
-		case add: case sub: case mul: case div: {
-			//build a new node instead of the parent's r_operand
+		//TODO: if(type is prefix){do below;continue}
 
-			//case 2-operand operators
-			const auto prefix_type = parseFrefix(first);
-			const auto perfix_priority = getPriority(type);
-
-			Executable* r_operand = parseIdentifier(first);
-
-			switch(prefix_type) {
-			case neg: {
-				//r_operand = -(r_operand)
-				OperationNode* node = new OperationNode(prefix_type, nullptr, r_operand);
-				r_operand = node;
-				node_stack.push(node);
-			}
-			}
-			OperationNode* new_node = new OperationNode(type, father_node->r_operand, r_operand);
-			father_node->r_operand = new_node;
+		//deal with prefixes
+		EOperatorType prefix_type;
+		while((prefix_type = parseFrefix(first)) != NOTHING) {
+			//NOTE that prefixes are the lowest priority so that we needn't find father.
+			auto node = new OperationNode(prefix_type);
+			new_node->r_operand = node;
+			new_node = node;
 			node_stack.push(new_node);
-
 		}
-		}
-	}
 
-	if(strcmp(r_op->className(), "YVal")) {
-		return r_op;
+		if(*first == '(') {
+			const char* inner_last = last;
+			while(*inner_last != ')')inner_last--;
+			char* s_expr = newString(first + 1, inner_last);
+			new_node->r_operand = makeOperationTree(s_expr);
+			str = inner_last + 1;
+		} else {
+			new_node->r_operand = parseIdentifier(first);
+		}
 	}
 
 	OperationNode* ret_node = (OperationNode*)r_op->r_operand;
@@ -140,55 +110,80 @@ YExpression::OperationNode* YExpression::getFatherNode(operation_stack_t& stack,
 	return stack.top();
 }
 
-YExpression::EOperatorType YExpression::parseSign(const char*& str) {
-	while (*str == ' ' || *str == '\n')str++;
-
-	EOperatorType opType = UNDEFINED;
-	switch(*str) {
-	case 0:
-		return opType;
-	case '+':
-		opType = add;
-		str++;
-		break;
-	case '-':
-		opType = sub;
-		str++;
-		break;
-	case '*':
-		opType = mul;
-		str++;
-		break;
-	case '/':
-		opType = div;
-		str++;
-		break;
-	default:
-		opType = UNDEFINED;
-		break;
+void YExpression::skipBlank(const char*& str) {
+	while(true) {
+		switch(*str) {
+		case ' ':
+		case '\t':
+		case '\r':
+		case '\n':
+			str++;
+			break;
+		default:
+			return;
+		}
 	}
+}
 
-	return opType;
+YExpression::EOperatorType YExpression::parseSign(const char*& str) {
+	skipBlank(str);
+
+	switch(*str) {
+	case '+':
+		str++;
+		return add;
+	case '-':
+		str++;
+		return sub;
+	case '*':
+		str++;
+		return mul;
+	case '/':
+		str++;
+		return div;
+	default:
+		throw YParseFailedException("YExpression::EOperatorType::parseSign", str, "the operator is not defined");
+	}
+}
+
+YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
+	skipBlank(str);
+
+	switch(str[0]) {
+	case '-': {
+		const char c = str[1];
+		if(c == '-') {
+			str += 2;
+			return front_dec;
+		}
+
+		//don't see -1 as -(1)
+		//just see it as number
+		if((c >= '0' && c <= '9') || c == '.') {
+			return NOTHING;
+		}
+
+		str += 1;
+		return neg;
+	}
+	case '+': {
+		const char c = str[1];
+		if(c == '+') {
+			str += 2;
+			return front_inc;
+		}
+
+		str += 1;
+		return NOTHING;
+	}
+	}
+	return NOTHING;
 }
 
 Executable* YExpression::parseIdentifier(const char*& str) {
-
-	while (*str == ' ' || *str == '\n')str++;
+	skipBlank(str);
 
 	const char* p = str;
-
-	//(...)
-	if(*p == '(') {
-		while(*p != ')')p++;
-
-		//*str='(', *p=')'
-		char* s_expr = newString(str + 1, p);
-
-		str = p + 1;
-
-		return makeOperationTree(s_expr);
-	}
-
 
 	/*for number*/
 
@@ -217,11 +212,6 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 
 }
 
-//todo: there is a bug that -1 struct.member goes wrong
-constexpr bool YExpression::isCharInIdentifier(const char c) {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '.';
-}
-
 YExpression::priority_t YExpression::getPriority(EOperatorType type) { return operator_priority.find(type)->second; }
 
 YExpression::OperationNode* YExpression::makeTestOperationTree() {
@@ -247,15 +237,4 @@ YExpression::OperationNode* YExpression::makeTestOperationTree() {
 	root->r_operand = div_node;
 
 	return root;
-}
-
-//1+2*3+4
-bool YExpression::parse(const char* str, YExpression* pExp) { return true; }
-
-YExpression::~YExpression() {
-	delete operation_tree;
-}
-
-YVal* YExpression::execute() {
-	return nullptr;
 }

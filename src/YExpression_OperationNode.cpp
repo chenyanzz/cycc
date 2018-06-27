@@ -20,17 +20,19 @@ const char* YExpression::OperationNode::className() const { return "YExpression:
 
 void YExpression::OperationNode::print() {
 
-	if (opType == val) {
+	if(opType == val) {
 		r_operand->print();
 		return;
 	}
-	cout << "(";
-	if (l_operand) l_operand->print();
 
+	cout << "(";
+	if(l_operand) l_operand->print();
+	cout << " ";
 	switch(opType) {
 	case add:
 		std::cout << "+";
 		break;
+	case neg:
 	case sub:
 		cout << "-";
 		break;
@@ -40,7 +42,10 @@ void YExpression::OperationNode::print() {
 	case div:
 		cout << "/";
 		break;
+	default:
+		cout << "???opType=" << opType;
 	}
+	cout << " ";
 	if(r_operand) r_operand->print();
 	cout << ")";
 }
@@ -50,47 +55,33 @@ YVal* YExpression::OperationNode::execute() {
 	//why calc in case scope:
 	//cuz operators some do from l to r,while others do from r to l
 	//also there are || &&
-	
-	YVal* ret = nullptr;
+
+	YVal *l_val = nullptr, *r_val = nullptr;
 
 	switch(opType) {
-	case add: {
-		YVal* l_val = l_operand->execute();
-		YVal* r_val = r_operand->execute();
-		ret = YVal::add(l_val, r_val);
-		break;
-	}
-	case sub: {
-		YVal* l_val = l_operand->execute();
-		YVal* r_val = r_operand->execute();
-		ret = YVal::sub(l_val, r_val);
-		break;
-	}
-	case mul: {
-		YVal* l_val = l_operand->execute();
-		YVal* r_val = r_operand->execute();
-		ret = YVal::mul(l_val, r_val);
-		break;
-	}
-	case div: {
-		YVal* l_val = l_operand->execute();
-		YVal* r_val = r_operand->execute();
-		ret = YVal::div(l_val, r_val);
-		break;
-	}
-	case neg: {
-		YVal* r_val = r_operand->execute();
-		ret = YVal::neg(r_val);
-	}
-	case val: {
-		YVal* r_val = r_operand->execute();
-		ret = r_val;
-		break;
-	}
-	case UNDEFINED:
+	case add:
+		l_val = l_operand->execute();
+		r_val = r_operand->execute();
+		return YVal::add(l_val, r_val);
+	case sub:
+		l_val = l_operand->execute();
+		r_val = r_operand->execute();
+		return YVal::sub(l_val, r_val);
+	case mul:
+		l_val = l_operand->execute();
+		r_val = r_operand->execute();
+		return YVal::mul(l_val, r_val);
+	case div:
+		l_val = l_operand->execute();
+		r_val = r_operand->execute();
+		return YVal::div(l_val, r_val);
+	case neg:
+		r_val = r_operand->execute();
+		return YVal::neg(r_val);
+	case val:
+		return r_operand->execute();
+
 	default:
 		throw YException("opType undefined");
 	}
-
-	return ret;
 }

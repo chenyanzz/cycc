@@ -74,12 +74,12 @@ YType* YType::parse(const char* code) {
 
 	const auto it = cyfind_if(types, [=](YType* pt) -> bool {return pt->name == str_type; });
 	if (it == types.end()) {
-		throw new YTypeNotFoundException(code);
+		throw YTypeNotFoundException(code);
 	}
 
 	if (isSigned) {
 		if ((*it)->base_type != cNum) {
-			throw new YTypeNotFoundException(code);
+			throw YTypeNotFoundException(code);
 		}
 	}
 

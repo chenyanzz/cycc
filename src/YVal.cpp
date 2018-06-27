@@ -87,10 +87,10 @@ void YVal::print() {
 YVal* YVal::parse(const char* s) {
 	if(s[0] == '+') s++;
 
-	try { return parseDecimal(s); } catch(YException* e) { delete e; }
-	try { return parseInt(s); } catch(YException* e) { delete e; }
+	try { return parseDecimal(s); } catch(YException& e) {}
+	try { return parseInt(s); } catch(YException& e) {}
 
-	throw new YParseFailedException("YVal", s, "not a proper literal");
+	throw YParseFailedException("YVal", s, "not a proper literal");
 }
 
 YVal* YVal::parseInt(const char* s) {
@@ -167,7 +167,7 @@ YVal* YVal::parseInt(const char* s) {
 			len -= 2;
 			p_type = YType::LongLong;
 		} else if(isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
-			throw new YInvalidCharException(s, len - 1, "suffix \"UU\" is illegal");
+			throw YInvalidCharException(s, len - 1, "suffix \"UU\" is illegal");
 		} else if(isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
 			len--;
 			p_type = YType::Long;
@@ -256,7 +256,7 @@ YVal* YVal::neg(YVal* v) {
 YVal* YVal::parseDecimal(const char* s) {
 
 	if(!strcmp(s, ".")) {
-		throw new YException("[YException] \"%s\" is not a proper decimal", s);
+		throw YException("[YException] \"%s\" is not a proper decimal", s);
 	}
 
 	const size_t buf_size = 100;
@@ -284,7 +284,7 @@ YVal* YVal::parseDecimal(const char* s) {
 		isLastSubStr(pc_num, len, "LL", 2) || isLastSubStr(pc_num, len, "ll", 2) ||
 		isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
 
-		throw new YInvalidCharException(s, len - 1, "the suffix is illegal for decimal");
+		throw YInvalidCharException(s, len - 1, "the suffix is illegal for decimal");
 	}
 
 	YType* ptype = YType::Double;
@@ -301,7 +301,7 @@ YVal* YVal::parseDecimal(const char* s) {
 
 	while(*pc_dot != '.') {
 		if(*pc_dot == 0) {
-			throw new YException("[YException] \"%s\" is not a proper decimal", buf);
+			throw YException("[YException] \"%s\" is not a proper decimal", buf);
 		}
 		pc_dot++;
 	}
@@ -328,7 +328,7 @@ YVal* YVal::parseDecimal(const char* s) {
 			dec_val += *pc - '0';
 			dec_val /= 10;
 		} else {
-			throw new YInvalidCharException(s, pc - buf, "illegal char in a number body");
+			throw YInvalidCharException(s, pc - buf, "illegal char in a number body");
 		}
 	}
 
