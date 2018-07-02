@@ -42,7 +42,6 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 
 	//forst of all needn't consider priority,just left to right
 	while(*first != 0) {
-
 		const auto type = parseSign(first);
 		const auto priority = getPriority(type);
 		OperationNode* father_node = getFatherNode(node_stack, priority);
@@ -53,25 +52,8 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 
 		//TODO: if(type is prefix){do below;continue}
 
-		//deal with prefixes
-		EOperatorType prefix_type;
-		while((prefix_type = parseFrefix(first)) != NOTHING) {
-			//NOTE that prefixes are the lowest priority so that we needn't find father.
-			auto node = new OperationNode(prefix_type);
-			new_node->r_operand = node;
-			new_node = node;
-			node_stack.push(new_node);
-		}
-
-		if(*first == '(') {
-			const char* inner_last = last;
-			while(*inner_last != ')')inner_last--;
-			char* s_expr = newString(first + 1, inner_last);
-			new_node->r_operand = makeOperationTree(s_expr);
-			str = inner_last + 1;
-		} else {
-			new_node->r_operand = parseIdentifier(first);
-		}
+		new_node = parsePrefixes(first, node_stack);
+		new_node->r_operand = parseIdentifier(first);
 	}
 
 	OperationNode* ret_node = (OperationNode*)r_op->r_operand;
@@ -108,6 +90,34 @@ YExpression::OperationNode* YExpression::getFatherNode(operation_stack_t& stack,
 	}
 
 	return stack.top();
+}
+
+YExpression::OperationNode* YExpression::parsePrefixes(const char*& first, operation_stack_t& node_stack) {
+	//deal with prefixes;
+	OperationNode* new_node = node_stack.top();
+	EOperatorType prefix_type;
+	while ((prefix_type = parseFrefix(first)) != NOTHING) {
+		//NOTE that prefixes are the lowest priority so that we needn't find father.
+		auto node = new OperationNode(prefix_type);
+		new_node->r_operand = node;
+		new_node = node;
+		node_stack.push(new_node);
+	}
+	return new_node;
+}
+
+YExpression::OperationNode* YExpression::parseParentheses(const char*& first) {
+	//deal with parentheses
+	const char* l_parenthesis = first;
+	int deep = 0;
+	do {
+		if (*first == '(')deep++;
+		if (*first == ')')deep--;
+		first++;
+	} while (deep > 0);
+
+	char* s_expr = newString(l_parenthesis + 1, first - 1);
+	return makeOperationTree(s_expr);
 }
 
 void YExpression::skipBlank(const char*& str) {
@@ -182,6 +192,10 @@ YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
 
 Executable* YExpression::parseIdentifier(const char*& str) {
 	skipBlank(str);
+
+	if (*str == '(') {
+		return parseParentheses(str);
+	}
 
 	const char* p = str;
 

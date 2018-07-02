@@ -13,7 +13,7 @@ using namespace std;
 
 #define CHECK_NULLPTR(param) if((param)==nullptr){throw(new YNullptrException(#param));}
 
-//stat: do with (long double*) v1, v2
+//stat: do with (long double) v1, v2
 #define implement_operation2(stat)	{	\
 const auto longdouble_v1 = v1->castTo(YType::LongDouble);	\
 const auto longdouble_v2 = v2->castTo(YType::LongDouble);	\
@@ -27,7 +27,7 @@ delete v_result;	\
 return result;	\
 }
 
-//stat: do with (long double*) v
+//stat: do with (long double) v
 #define implement_operation1(stat)	{	\
 const auto longdouble_v = v->castTo(YType::LongDouble);	\
 const auto v = longdouble_v->data<long double>();	\
