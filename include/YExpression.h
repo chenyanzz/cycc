@@ -69,8 +69,6 @@ protected:
 
 	static OperationNode* parsePrefixes(const char*& first, operation_stack_t& node_stack);
 	static OperationNode* parseParentheses(const char*& first);
-
-	static void skipBlank(const char*& str);
 };
 
 class YExpression::OperationNode: public Executable {

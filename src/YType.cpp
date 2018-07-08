@@ -122,6 +122,4 @@ void YType::print() {
 }
 
 
-const char* YType::className() const {
-	return "YType";
-}
+const char* YType::className() const {return "YType";}

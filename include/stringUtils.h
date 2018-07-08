@@ -22,3 +22,6 @@ char* newString(const char* begin, int len);
 
 //not include end
 char* newString(const char* begin, const char* end);
+
+//delete blank chars front of str
+void skipBlank(const char*& str);

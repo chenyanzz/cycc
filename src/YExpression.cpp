@@ -35,8 +35,6 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 
 	OperationNode* r_op = new OperationNode(val, nullptr, parseIdentifier(first));
 
-	const auto const root_node = new OperationNode(val, nullptr, r_op);
-
 	operation_stack_t node_stack;
 	node_stack.push(r_op);
 
@@ -50,16 +48,13 @@ YExpression::OperationNode* YExpression::makeOperationTree(const char* str) {
 		father_node->r_operand = new_node;
 		node_stack.push(new_node);
 
-		//TODO: if(type is prefix){do below;continue}
-
 		new_node = parsePrefixes(first, node_stack);
 		new_node->r_operand = parseIdentifier(first);
 	}
 
 	OperationNode* ret_node = (OperationNode*)r_op->r_operand;
-	root_node->r_operand = nullptr;
 	r_op->r_operand = nullptr;
-	delete root_node, r_op;
+	delete r_op;
 
 	return ret_node;
 }
@@ -120,21 +115,6 @@ YExpression::OperationNode* YExpression::parseParentheses(const char*& first) {
 	return makeOperationTree(s_expr);
 }
 
-void YExpression::skipBlank(const char*& str) {
-	while(true) {
-		switch(*str) {
-		case ' ':
-		case '\t':
-		case '\r':
-		case '\n':
-			str++;
-			break;
-		default:
-			return;
-		}
-	}
-}
-
 YExpression::EOperatorType YExpression::parseSign(const char*& str) {
 	skipBlank(str);
 
@@ -192,38 +172,26 @@ YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
 
 Executable* YExpression::parseIdentifier(const char*& str) {
 	skipBlank(str);
-
-	if (*str == '(') {
-		return parseParentheses(str);
-	}
-
+	if (*str == '(') return parseParentheses(str);
+	
 	const char* p = str;
-
-	/*for number*/
-
+	//skip signs
 	if(*p == '+')p++;
-
-	//    -1, -1.23
 	if(*p == '-')p++;
-	//==> 1, 1.23
-	while(*p >= '0' && *p <= '9') p++;
-
-	//deal -1
+	//skip integer part
+	while (*p >= '0' && *p <= '9') p++;
+	//deal \.\d+
 	if(*p != '.') {
 		char* s_int = newString(str, p);
 		str = p;
 		return YVal::parseInt(s_int);
 	}
-	//*p=='.'
-	p++;
-
-	//deal -1.23
+	//deal \d*\.\d*
+	p++;//p==decimal part
 	while(*p >= '0' && *p <= '9') p++;
-
 	char* s_decimal = newString(str, p);
 	str = p;
 	return YVal::parseDecimal(s_decimal);
-
 }
 
 YExpression::priority_t YExpression::getPriority(EOperatorType type) { return operator_priority.find(type)->second; }

@@ -127,6 +127,9 @@ YVal* YVal::parseInt(const char* s) {
 		bNegative = true;
 	case '+':
 		pc_num++;
+		const char c = *pc_num;
+		if (!((c >= '0'&&c <= '9') || (c >= 'a'&&c <= 'f') || (c >= 'A'&&c <= 'F')))
+			throw YParseFailedException("YVal", s, "is not a number");
 	}
 
 	//deal with hex oct bin

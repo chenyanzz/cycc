@@ -53,10 +53,22 @@ char* newString(const char* begin,const int len) {
 	char* new_string = new char[len + 1];
 	memcpy(new_string, begin, len);
 	new_string[len] = 0;
-
 	return new_string;
 }
 
-char* newString(const char* begin, const char* end) {
-	return newString(begin, end - begin);
+char* newString(const char* begin, const char* end) {return newString(begin, end - begin);}
+
+void skipBlank(const char*& str) {
+	while (true) {
+		switch (*str) {
+		case ' ':
+		case '\t':
+		case '\r':
+		case '\n':
+			str++;
+			break;
+		default:
+			return;
+		}
+	}
 }
