@@ -1,6 +1,6 @@
 #pragma once
 
-/**
+/*
  * Created by cy on 2018/5/26.
  *
  * The class for saving values.

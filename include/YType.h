@@ -1,4 +1,4 @@
-/**
+/*
  * Created by cy on 2018/5/24.
  *
  * The class of C types.
@@ -11,52 +11,37 @@
 #include <string>
 #include "CYCC.h"
 
-class YType : public CYCC 
-{
+class YType: public CYCC {
 public:
-	YType(const YType&) = delete;
-	YType(YType&&) = delete;
-	YType& operator=(const YType&) = delete;
-	YType& operator=(YType&&) = delete;
 	virtual ~YType() = default;
 
 protected:
-
-	static std::set<YType*> types;
-
+	typedef std::set<YType*> TypeList;
+	static TypeList types;
 	static const char* str_unsigned;
 	static const char* str_signed;
-
-
+	
 public:
 	std::string name = "";
 	size_t size = 0;
-
-	enum BaseType 
-	{
-		cNum, cPtr, cStruct, cEnum, UNDEFINED
-	};
-
-	BaseType base_type = UNDEFINED;
+	enum BaseType { cNum, cPtr, cStruct, cEnum, cVoid }
+	base_type = cVoid;
 
 protected:
-	YType() = default;
+	YType();
+	YType(std::string name, size_t size, BaseType baseType);
+
+	static void add(YType* type);
+	static void add(TypeList& vec_types);
+
+	friend void doTests();
+	static void init();//call to sub-classes' init()
+	static void terminate();//just run with the base class to delete everything
 
 public:
-	typedef YType* PType;
-	static PType Char, UChar, Short, UShort, Int, UInt, Long, ULong, LongLong, ULongLong, Float, Double, LongDouble;
-
-public:
-	static bool add(const char* name, int size, BaseType baseType, YType*& pNewType);
-
-	//@throws YTypeNotFoundException
+	//!@throws YTypeNotFoundException
 	static YType* parse(const char* code);
-
-	static void init();
-
-	static void terminate();
 
 	const char* className() const override;
 	void print() override;
 };
-

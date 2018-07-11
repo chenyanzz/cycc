@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <cstring>
-#include "YNum.h"
+#include "YNumType.h"
 #include "YVal.h"
 #include "YException.h"
 #include "stringUtils.h"
@@ -15,25 +15,25 @@ using namespace std;
 
 //stat: do with (long double) v1, v2
 #define implement_operation2(stat)	{	\
-const auto longdouble_v1 = v1->castTo(YType::LongDouble);	\
-const auto longdouble_v2 = v2->castTo(YType::LongDouble);	\
+const auto longdouble_v1 = v1->castTo(YNumType::LongDouble);	\
+const auto longdouble_v2 = v2->castTo(YNumType::LongDouble);	\
 const auto v1 = longdouble_v1->data<long double>();	\
 const auto v2 = longdouble_v2->data<long double>();	\
 delete longdouble_v1;	\
 delete longdouble_v2;	\
 auto* v_result = new long double(stat);	\
-auto result = new YVal(YType::LongDouble, v_result);	\
+auto result = new YVal(YNumType::LongDouble, v_result);	\
 delete v_result;	\
 return result;	\
 }
 
 //stat: do with (long double) v
 #define implement_operation1(stat)	{	\
-const auto longdouble_v = v->castTo(YType::LongDouble);	\
+const auto longdouble_v = v->castTo(YNumType::LongDouble);	\
 const auto v = longdouble_v->data<long double>();	\
 delete longdouble_v;	\
 auto* v_result = new long double(stat);	\
-auto result = new YVal(YType::LongDouble, v_result);	\
+auto result = new YVal(YNumType::LongDouble, v_result);	\
 delete v_result;	\
 return result;	\
 }
@@ -41,37 +41,37 @@ return result;	\
 //stat: do with (long double)num = pVal->data<pType>()
 #define getNum(pType,pVal,stat){	\
 long double num=0;	\
-if (pType == YType::Float)num = pVal->data<float>();	\
-else if (pType == YType::Double)num = pVal->data<double>();	\
-else if (pType == YType::LongDouble)num = pVal->data<long double>();	\
-else if (pType == YType::Char)num = (int)pVal->data<char>();/*do not show as a char*/	\
-else if (pType == YType::Short)num = pVal->data<short>();	\
-else if (pType == YType::Int)num = pVal->data<int>();	\
-else if (pType == YType::Long)num = pVal->data<long>();	\
-else if (pType == YType::LongLong)num = pVal->data<long long>();	\
-else if (pType == YType::UChar)num = (int)pVal->data<unsigned char>();/*do not show as a char*/	\
-else if (pType == YType::UShort)num = pVal->data<unsigned short>();	\
-else if (pType == YType::UInt)num = pVal->data<unsigned int>();	\
-else if (pType == YType::ULong)num = pVal->data<unsigned long>();	\
-else if (pType == YType::ULongLong)num = pVal->data<unsigned long long>();	\
+if (pType == YNumType::Float)num = pVal->data<float>();	\
+else if (pType == YNumType::Double)num = pVal->data<double>();	\
+else if (pType == YNumType::LongDouble)num = pVal->data<long double>();	\
+else if (pType == YNumType::Char)num = (int)pVal->data<char>();/*do not show as a char*/	\
+else if (pType == YNumType::Short)num = pVal->data<short>();	\
+else if (pType == YNumType::Int)num = pVal->data<int>();	\
+else if (pType == YNumType::Long)num = pVal->data<long>();	\
+else if (pType == YNumType::LongLong)num = pVal->data<long long>();	\
+else if (pType == YNumType::UChar)num = (int)pVal->data<unsigned char>();/*do not show as a char*/	\
+else if (pType == YNumType::UShort)num = pVal->data<unsigned short>();	\
+else if (pType == YNumType::UInt)num = pVal->data<unsigned int>();	\
+else if (pType == YNumType::ULong)num = pVal->data<unsigned long>();	\
+else if (pType == YNumType::ULongLong)num = pVal->data<unsigned long long>();	\
 stat;	\
 }
 
 
 #define setNum(pVal,equal_what){	\
-if (pVal->pType == YType::Float)pVal->data<float>() = equal_what;	\
-else if (pVal->pType == YType::Double)pVal->data<double>() = equal_what;	\
-else if (pVal->pType == YType::LongDouble)pVal->data<long double>() = equal_what;	\
-else if (pVal->pType == YType::Char)pVal->data<char>() = equal_what;	\
-else if (pVal->pType == YType::Short)pVal->data<short>() = equal_what;	\
-else if (pVal->pType == YType::Int)pVal->data<int>() = equal_what;	\
-else if (pVal->pType == YType::Long)pVal->data<long>() = equal_what;	\
-else if (pVal->pType == YType::LongLong)pVal->data<long long>() = equal_what;	\
-else if (pVal->pType == YType::UChar)pVal->data<unsigned char>() = equal_what;	\
-else if (pVal->pType == YType::UShort)pVal->data<unsigned short>() = equal_what;	\
-else if (pVal->pType == YType::UInt)pVal->data<unsigned int>() = equal_what;	\
-else if (pVal->pType == YType::ULong)pVal->data<unsigned long>() = equal_what;	\
-else if (pVal->pType == YType::ULongLong)pVal->data<unsigned long long>() = equal_what;	\
+if (pVal->pType == YNumType::Float)pVal->data<float>() = equal_what;	\
+else if (pVal->pType == YNumType::Double)pVal->data<double>() = equal_what;	\
+else if (pVal->pType == YNumType::LongDouble)pVal->data<long double>() = equal_what;	\
+else if (pVal->pType == YNumType::Char)pVal->data<char>() = equal_what;	\
+else if (pVal->pType == YNumType::Short)pVal->data<short>() = equal_what;	\
+else if (pVal->pType == YNumType::Int)pVal->data<int>() = equal_what;	\
+else if (pVal->pType == YNumType::Long)pVal->data<long>() = equal_what;	\
+else if (pVal->pType == YNumType::LongLong)pVal->data<long long>() = equal_what;	\
+else if (pVal->pType == YNumType::UChar)pVal->data<unsigned char>() = equal_what;	\
+else if (pVal->pType == YNumType::UShort)pVal->data<unsigned short>() = equal_what;	\
+else if (pVal->pType == YNumType::UInt)pVal->data<unsigned int>() = equal_what;	\
+else if (pVal->pType == YNumType::ULong)pVal->data<unsigned long>() = equal_what;	\
+else if (pVal->pType == YNumType::ULongLong)pVal->data<unsigned long long>() = equal_what;	\
 }
 
 const char* YVal::className() const {
@@ -79,7 +79,7 @@ const char* YVal::className() const {
 }
 
 void YVal::print() {
-	if(pType->base_type == YType::cNum) {
+	if(pType->base_type == YNumType::cNum) {
 		getNum(pType, this, cout << num);
 	}
 }
@@ -98,7 +98,7 @@ YVal* YVal::parseInt(const char* s) {
 
 	//for char val
 	if(s[0] == '\'' && s[2] == '\'') {
-		YVal* pVal = new YVal(YNum::Char);
+		YVal* pVal = new YVal(YNumType::Char);
 		pVal->data<char>() = s[1];
 		return pVal;
 	}
@@ -117,7 +117,7 @@ YVal* YVal::parseInt(const char* s) {
 	if(buf[0] == '\'' && buf[strlen(buf) - 1] == '\'') {
 		pc_num++;
 		buf[strlen(buf) - 1] = 0;
-		p_type = YType::Char;
+		p_type = YNumType::Char;
 	}
 
 	/*prefix*/
@@ -162,23 +162,23 @@ YVal* YVal::parseInt(const char* s) {
 		if(isLastSubStr(pc_num, len, "ULL", 3) || isLastSubStr(pc_num, len, "ull", 3) ||
 			isLastSubStr(pc_num, len, "LLU", 3) || isLastSubStr(pc_num, len, "llu", 3)) {
 			len -= 3;
-			p_type = YType::ULongLong;
+			p_type = YNumType::ULongLong;
 		} else if(isLastSubStr(pc_num, len, "UL", 2) || isLastSubStr(pc_num, len, "ul", 2)) {
 			len -= 2;
-			p_type = YType::ULong;
+			p_type = YNumType::ULong;
 		} else if(isLastSubStr(pc_num, len, "LL", 2) || isLastSubStr(pc_num, len, "ll", 2)) {
 			len -= 2;
-			p_type = YType::LongLong;
+			p_type = YNumType::LongLong;
 		} else if(isLastSubStr(pc_num, len, "UU", 2) || isLastSubStr(pc_num, len, "uu", 2)) {
 			throw YInvalidCharException(s, len - 1, "suffix \"UU\" is illegal");
 		} else if(isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
 			len--;
-			p_type = YType::Long;
+			p_type = YNumType::Long;
 		} else if(isLastSubStr(pc_num, len, "U", 1) || isLastSubStr(pc_num, len, "u", 1)) {
 			len--;
-			p_type = YType::UInt;
+			p_type = YNumType::UInt;
 		} else {
-			p_type = YType::Int;
+			p_type = YNumType::Int;
 		}
 	}
 
@@ -290,14 +290,14 @@ YVal* YVal::parseDecimal(const char* s) {
 		throw YInvalidCharException(s, len - 1, "the suffix is illegal for decimal");
 	}
 
-	YType* ptype = YType::Double;
+	YType* ptype = YNumType::Double;
 
 	if(isLastSubStr(pc_num, len, "F", 1) || isLastSubStr(pc_num, len, "f", 1)) {
 		len--;
-		ptype = YType::Float;
+		ptype = YNumType::Float;
 	} else if(isLastSubStr(pc_num, len, "L", 1) || isLastSubStr(pc_num, len, "l", 1)) {
 		len--;
-		ptype = YType::LongDouble;
+		ptype = YNumType::LongDouble;
 	}
 
 	/*int part*/
@@ -341,9 +341,9 @@ YVal* YVal::parseDecimal(const char* s) {
 
 	if(bNegative)val = -val;
 
-	if(ptype == YType::Float) pVal->data<float>() = val;
-	else if(ptype == YType::Double) pVal->data<double>() = val;
-	else if(ptype == YType::LongDouble) pVal->data<long double>() = val;
+	if(ptype == YNumType::Float) pVal->data<float>() = val;
+	else if(ptype == YNumType::Double) pVal->data<double>() = val;
+	else if(ptype == YNumType::LongDouble) pVal->data<long double>() = val;
 
 	return pVal;
 }
@@ -356,9 +356,9 @@ YVal* YVal::castTo(YType* pNewType) {
 	//anyone is not a number
 	//or both are int's
 	if(
-		pNewType->base_type != YType::cNum ||
-		pOldType->base_type != YType::cNum ||
-		(!((YNum*)pOldType)->bIsDecimal && !((YNum*)pNewType)->bIsDecimal)
+		pNewType->base_type != YNumType::cNum ||
+		pOldType->base_type != YNumType::cNum ||
+		(!((YNumType*)pOldType)->bIsDecimal && !((YNumType*)pNewType)->bIsDecimal)
 	) {
 		return new YVal(pNewType, pOldData);
 	}
@@ -366,7 +366,7 @@ YVal* YVal::castTo(YType* pNewType) {
 	//deal with the cast between int and decimal
 	YVal* pNewVal = new YVal(pNewType);
 
-	if(pNewType->base_type == YType::cNum) {
+	if(pNewType->base_type == YNumType::cNum) {
 
 		long double oldval = 0.0l;
 
