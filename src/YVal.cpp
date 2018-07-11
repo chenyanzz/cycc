@@ -11,31 +11,32 @@
 
 using namespace std;
 
-#define CHECK_NULLPTR(param) if((param)==nullptr){throw(new YNullptrException(#param));}
+#define CHECK_NULLPTR(param) if((param)==nullptr){throw YNullptrException(#param);}
 
-//stat: do with (long double) v1, v2
-#define implement_operation2(stat)	{	\
-const auto longdouble_v1 = v1->castTo(YNumType::LongDouble);	\
-const auto longdouble_v2 = v2->castTo(YNumType::LongDouble);	\
-const auto v1 = longdouble_v1->data<long double>();	\
-const auto v2 = longdouble_v2->data<long double>();	\
-delete longdouble_v1;	\
-delete longdouble_v2;	\
-auto* v_result = new long double(stat);	\
-auto result = new YVal(YNumType::LongDouble, v_result);	\
-delete v_result;	\
-return result;	\
+template <typename func_2op_t>
+YVal* YVal::exec_op2(YVal* v1, YVal* v2, func_2op_t operation) {
+	YVal* pVal_longdouble1 = v1->castTo(YNumType::LongDouble);
+	YVal* pVal_longdouble2 = v2->castTo(YNumType::LongDouble);
+	const long double number1 = pVal_longdouble1->data<long double>();
+	const long double number2 = pVal_longdouble2->data<long double>();
+	delete pVal_longdouble1, pVal_longdouble2;
+	auto v_result = new long double(operation(number1, number2));
+
+	auto result = new YVal(YNumType::LongDouble, v_result);
+	delete v_result;
+	return result;
 }
 
-//stat: do with (long double) v
-#define implement_operation1(stat)	{	\
-const auto longdouble_v = v->castTo(YNumType::LongDouble);	\
-const auto v = longdouble_v->data<long double>();	\
-delete longdouble_v;	\
-auto* v_result = new long double(stat);	\
-auto result = new YVal(YNumType::LongDouble, v_result);	\
-delete v_result;	\
-return result;	\
+template <typename func_1op_t>
+YVal* YVal::exec_op1(YVal* v, func_1op_t operation) {
+	YVal* pVal_longdouble = v->castTo(YNumType::LongDouble);
+	const long double number = pVal_longdouble->data<long double>();
+	delete pVal_longdouble;
+	auto v_result = new long double(operation(number));
+
+	auto result = new YVal(YNumType::LongDouble, v_result);
+	delete v_result;
+	return result;
 }
 
 //stat: do with (long double)num = pVal->data<pType>()
@@ -96,7 +97,7 @@ YVal* YVal::parse(const char* s) {
 YVal* YVal::parseInt(const char* s) {
 	YType* p_type = nullptr;
 
-	//for char val
+	//for char val				
 	if(s[0] == '\'' && s[2] == '\'') {
 		YVal* pVal = new YVal(YNumType::Char);
 		pVal->data<char>() = s[1];
@@ -128,7 +129,7 @@ YVal* YVal::parseInt(const char* s) {
 	case '+':
 		pc_num++;
 		const char c = *pc_num;
-		if (!((c >= '0'&&c <= '9') || (c >= 'a'&&c <= 'f') || (c >= 'A'&&c <= 'F')))
+		if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
 			throw YParseFailedException("YVal", s, "is not a number");
 	}
 
@@ -194,11 +195,11 @@ YVal* YVal::parseInt(const char* s) {
 		} else if(hexletter >= 'a' && hexletter <= 'f') {
 			bitval = hexletter - 'a' + 10;
 		} else {
-			throw(new YInvalidCharException(s, pc_num - buf, "illegal char in a number body"));
+			throw YInvalidCharException(s, pc_num - buf, "illegal char in a number body");
 		}
 
 		if(bitval >= radix) {
-			throw(new YInvalidCharException(s, pc_num - buf, "illegal char in a number body"));
+			throw YInvalidCharException(s, pc_num - buf, "illegal char in a number body");
 		}
 
 		num *= radix;
@@ -237,23 +238,23 @@ YType* YVal::type() { return pType; }
 YVal* YVal::execute() { return this->clone(); }
 
 YVal* YVal::add(YVal* v1, YVal* v2) {
-	implement_operation2(v1 + v2);
+	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 + v2; });
 }
 
 YVal* YVal::sub(YVal* v1, YVal* v2) {
-	implement_operation2(v1 - v2);
+	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 - v2; });
 }
 
 YVal* YVal::mul(YVal* v1, YVal* v2) {
-	implement_operation2(v1 * v2);
+	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 * v2; });
 }
 
 YVal* YVal::div(YVal* v1, YVal* v2) {
-	implement_operation2(v1 / v2);
+	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 / v2; });
 }
 
 YVal* YVal::neg(YVal* v) {
-	implement_operation1(-v);
+	return exec_op1(v, [](auto v) { return -v; });
 }
 
 YVal* YVal::parseDecimal(const char* s) {

@@ -50,9 +50,9 @@ protected:
 	byte* pData = nullptr; //pData is auto-destroyed
 
 protected:
-	//@throws YInvalidCharException
+	//!@throws YInvalidCharException
 	static YVal* parseInt(const char* s);
-	//@throws YInvalidCharException
+	//!@throws YInvalidCharException
 	static YVal* parseDecimal(const char* s);
 
 	YVal() = default;
@@ -61,6 +61,15 @@ protected:
 	YVal(YType* ptype, void* pdata);
 	YVal(YVal* pVal);
 
+	//!@param operation : a lambda (or sth. else) like: [](auto v1,auto v2){return v1+v2;}	\n
+	//!for current it is called with and returns (long double)type.
+	template <typename func_2op_t>
+	static YVal* exec_op2(YVal* v1, YVal* v2, func_2op_t operation);
+
+	//!@param operation : a lambda (or sth. else) like: [](auto v){return -v;}	\n
+	//!for current it is called with and returns (long double)type.
+	template <typename func_1op_t>
+	static YVal* exec_op1(YVal* v, func_1op_t operation);
 public:
 	void print() override;
 	const char* className() const override;
