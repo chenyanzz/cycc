@@ -20,11 +20,8 @@ YVal* YVal::exec_op2(YVal* v1, YVal* v2, func_2op_t operation) {
 	const long double number1 = pVal_longdouble1->data<long double>();
 	const long double number2 = pVal_longdouble2->data<long double>();
 	delete pVal_longdouble1, pVal_longdouble2;
-	auto v_result = new long double(operation(number1, number2));
 
-	auto result = new YVal(YNumType::LongDouble, v_result);
-	delete v_result;
-	return result;
+	return YVal::newFrom(YNumType::LongDouble, operation(number1, number2));
 }
 
 template <typename func_1op_t>
@@ -32,11 +29,8 @@ YVal* YVal::exec_op1(YVal* v, func_1op_t operation) {
 	YVal* pVal_longdouble = v->castTo(YNumType::LongDouble);
 	const long double number = pVal_longdouble->data<long double>();
 	delete pVal_longdouble;
-	auto v_result = new long double(operation(number));
 
-	auto result = new YVal(YNumType::LongDouble, v_result);
-	delete v_result;
-	return result;
+	return YVal::newFrom(YNumType::LongDouble, operation(number));
 }
 
 //stat: do with (long double)num = pVal->data<pType>()
@@ -58,7 +52,6 @@ else if (pType == YNumType::ULongLong)num = pVal->data<unsigned long long>();	\
 stat;	\
 }
 
-
 #define setNum(pVal,equal_what){	\
 if (pVal->pType == YNumType::Float)pVal->data<float>() = equal_what;	\
 else if (pVal->pType == YNumType::Double)pVal->data<double>() = equal_what;	\
@@ -75,9 +68,7 @@ else if (pVal->pType == YNumType::ULong)pVal->data<unsigned long>() = equal_what
 else if (pVal->pType == YNumType::ULongLong)pVal->data<unsigned long long>() = equal_what;	\
 }
 
-const char* YVal::className() const {
-	return "YVal";
-}
+const char* YVal::className() const { return "YVal"; }
 
 void YVal::print() {
 	if(pType->base_type == YNumType::cNum) {
@@ -88,8 +79,8 @@ void YVal::print() {
 YVal* YVal::parse(const char* s) {
 	if(s[0] == '+') s++;
 
-	try { return parseDecimal(s); } catch(YException& e) {}
-	try { return parseInt(s); } catch(YException& e) {}
+	try { return parseDecimal(s); } catch(YException&) {}
+	try { return parseInt(s); } catch(YException&) {}
 
 	throw YParseFailedException("YVal", s, "not a proper literal");
 }
@@ -99,9 +90,7 @@ YVal* YVal::parseInt(const char* s) {
 
 	//for char val				
 	if(s[0] == '\'' && s[2] == '\'') {
-		YVal* pVal = new YVal(YNumType::Char);
-		pVal->data<char>() = s[1];
-		return pVal;
+		return YVal::newFrom(YNumType::Char, s[1]);
 	}
 
 	//for int val
@@ -234,28 +223,12 @@ YVal* YVal::parseInt(const char* s) {
 }
 
 YType* YVal::type() { return pType; }
-
 YVal* YVal::execute() { return this->clone(); }
-
-YVal* YVal::add(YVal* v1, YVal* v2) {
-	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 + v2; });
-}
-
-YVal* YVal::sub(YVal* v1, YVal* v2) {
-	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 - v2; });
-}
-
-YVal* YVal::mul(YVal* v1, YVal* v2) {
-	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 * v2; });
-}
-
-YVal* YVal::div(YVal* v1, YVal* v2) {
-	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 / v2; });
-}
-
-YVal* YVal::neg(YVal* v) {
-	return exec_op1(v, [](auto v) { return -v; });
-}
+YVal* YVal::add(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 + v2; }); }
+YVal* YVal::sub(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 - v2; }); }
+YVal* YVal::mul(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 * v2; }); }
+YVal* YVal::div(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 / v2; }); }
+YVal* YVal::neg(YVal* v) { return exec_op1(v, [](auto v) { return -v; }); }
 
 YVal* YVal::parseDecimal(const char* s) {
 
@@ -388,10 +361,13 @@ YVal::YVal(YType* ptype) {
 
 YVal::YVal(YType* ptype, void* pdata): YVal(ptype) {
 	memset(this->pData, 0, this->pType->size);
-	memcpy(this->pData, pdata, min(this->pType->size, ptype->size));
+	memcpy(this->pData, pdata, this->pType->size);
 }
 
-YVal::YVal(YVal* pVal) : YVal(pVal->pType, pVal->pData) {}
+YVal::YVal(YVal* pVal): YVal(pVal->pType, pVal->pData) {}
+
+template <typename T>
+YVal* YVal::newFrom(YType* type, T data) { return new YVal(type, &data); }
 
 YVal::~YVal() {
 	delete pData;

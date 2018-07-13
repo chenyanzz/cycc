@@ -4,6 +4,7 @@
 
 #include "stringUtils.h"
 #include "YException.h"
+#include <cassert>
 
 
 char* trimAll(const char* s) {
@@ -50,6 +51,7 @@ bool isLastSubStr(const char* total, const size_t total_len, const char* substr,
 }
 
 char* newString(const char* begin,const int len) {
+	assert(len > 0);
 	char* new_string = new char[len + 1];
 	memcpy(new_string, begin, len);
 	new_string[len] = 0;
@@ -58,17 +60,25 @@ char* newString(const char* begin,const int len) {
 
 char* newString(const char* begin, const char* end) {return newString(begin, end - begin);}
 
+bool isBlank(char c) {
+	switch (c) {
+	case ' ':
+	case '\t':
+	case '\r':
+	case '\n':
+		return true;
+	}
+	return false;
+}
+
 void skipBlank(const char*& str) {
-	while (true) {
-		switch (*str) {
-		case ' ':
-		case '\t':
-		case '\r':
-		case '\n':
-			str++;
-			break;
-		default:
-			return;
-		}
+	while (isBlank(*str)) {
+		str++;
+	}
+}
+
+void skipBlankBack(const char*& str) {
+	while (isBlank(*str)) {
+		str--;
 	}
 }

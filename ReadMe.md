@@ -2,29 +2,32 @@
 
 
 ## 简介
-又一个初三小天使没事闲的挖的新坑：从零开始写个C解释器 emm...
+又一个准高一小天使没事闲的挖的新坑：从零开始写个C解释器 emm...
 路漫漫其修远兮，吾将上下而求索
 
 
 ## 架构介绍
 
+### 库
+主要用的是libc和stl里的标准库函数，效率什么的...
+
 ### 特殊类
 
-- YCode  基类
-- YEnv   执行环境控制及变量生命周期管理
+- [ ] YCode  基类
+- [ ] YEnv   执行环境控制及变量生命周期管理
 
 ### 解析类
 
-- YType
-    - YNum
-    - YPtr
-    - YStruct
-    - YEnum
-- YVar
-- YExpression
-- YStatement
-- YSCope
-- YFunction
+- [x] YType
+    - [x] YNumType
+    - [ ] YPtrType
+    - [ ] YStructType
+    - [ ] YEnumType
+- [x] YVar
+- [x] YExpression
+- [ ] YStatement
+- [ ] YSCope
+- [ ] YFunction
 
 ### 开发思路
 

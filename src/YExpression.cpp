@@ -18,7 +18,7 @@ const std::unordered_map<YExpression::EOperatorType, YExpression::priority_t> YE
 };
 
 const char* YExpression::className() const { return "YExpression"; }
-void YExpression::print() { cout << "(" << className() << "){" << s_expr << "}"; }
+void YExpression::print() { operation_tree->print(); }
 YVal* YExpression::execute() { return operation_tree->execute(); }
 YExpression::~YExpression() { delete operation_tree; }
 
@@ -178,20 +178,24 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 	//skip signs
 	if(*p == '+')p++;
 	if(*p == '-')p++;
-	//skip integer part
-	while (*p >= '0' && *p <= '9') p++;
-	//deal \.\d+
-	if(*p != '.') {
-		char* s_int = newString(str, p);
+
+	//for a number literal
+	if (*p >= '0' && *p <= '9') {
+		//skip integer part
+		while (*p >= '0' && *p <= '9') p++;
+		//deal \.\d+
+		if (*p != '.') {
+			char* s_int = newString(str, p);
+			str = p;
+			return YVal::parseInt(s_int);
+		}
+		//deal \d*\.\d*
+		p++;//p==decimal part
+		while (*p >= '0' && *p <= '9') p++;
+		char* s_decimal = newString(str, p);
 		str = p;
-		return YVal::parseInt(s_int);
+		return YVal::parseDecimal(s_decimal);
 	}
-	//deal \d*\.\d*
-	p++;//p==decimal part
-	while(*p >= '0' && *p <= '9') p++;
-	char* s_decimal = newString(str, p);
-	str = p;
-	return YVal::parseDecimal(s_decimal);
 }
 
 YExpression::priority_t YExpression::getPriority(EOperatorType type) { return operator_priority.find(type)->second; }

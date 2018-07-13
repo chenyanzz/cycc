@@ -40,7 +40,8 @@ protected:
 
 public:
 	//!@throws YTypeNotFoundException
-	static YType* parse(const char* code);
+	//!@note this function does NOT skip blanks
+	static YType* parse(const char* str);
 
 	const char* className() const override;
 	void print() override;

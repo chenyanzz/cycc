@@ -26,21 +26,22 @@ YType::YType(string name, size_t size, BaseType baseType)
 void YType::add(YType* type) { types.insert(type); }
 void YType::add(TypeList& vec_types) { types.insert(vec_types.begin(), vec_types.end()); }
 
-YType* YType::parse(const char* code) {
-	string str_type = code;
-	const bool isSigned = isFirstSubStr(code, str_signed);
+YType* YType::parse(const char* str) {
+	string str_type = str;
+
+	const bool isSigned = isFirstSubStr(str, str_signed);
 	if(isSigned) {
-		str_type = string(code + strlen(str_signed));
+		str_type = string(str + strlen(str_signed));
 	}
 
 	const auto it = cyfind_if(types, [=](YType* pt) -> bool {return pt->name == str_type; });
 	if(it == types.end()) {
-		throw YTypeNotFoundException(code);
+		throw YTypeNotFoundException(str);
 	}
 
 	if(isSigned) {
 		if((*it)->base_type != cNum) {
-			throw YTypeNotFoundException(code);
+			throw YTypeNotFoundException(str);
 		}
 	}
 

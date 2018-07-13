@@ -13,7 +13,6 @@
 #include "YException.h"
 #include "common.h"
 #include "Excutable.h"
-#include "YVar.h"
 
 class YVal: public Executable {
 public:
@@ -47,7 +46,7 @@ public:
 
 protected:
 	YType* pType; //can NOT be deleted when destructing
-	byte* pData = nullptr; //pData is auto-destroyed
+	byte* pData; //pData is auto-destroyed
 
 protected:
 	//!@throws YInvalidCharException
@@ -55,11 +54,14 @@ protected:
 	//!@throws YInvalidCharException
 	static YVal* parseDecimal(const char* s);
 
-	YVal() = default;
-
-	YVal(YType* ptype);
-	YVal(YType* ptype, void* pdata);
 	YVal(YVal* pVal);
+	YVal::YVal(YType* ptype);
+
+	//! new YVal's data is COPIED from pdata
+	YVal::YVal(YType* ptype, void* pdata);
+
+	template <typename T>
+	static YVal* newFrom(YType* type, T data);
 
 	//!@param operation : a lambda (or sth. else) like: [](auto v1,auto v2){return v1+v2;}	\n
 	//!for current it is called with and returns (long double)type.

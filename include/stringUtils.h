@@ -20,8 +20,13 @@ bool isLastSubStr(const char* total, size_t total_len, const char* substr, size_
 
 char* newString(const char* begin, int len);
 
-//not include end
+//returns [begin,end)
 char* newString(const char* begin, const char* end);
 
-//delete blank chars front of str
+bool isBlank(char c);
+
+//str++ at blank chars
 void skipBlank(const char*& str);
+
+//str-- at blank chars
+void skipBlankBack(const char*& str);
