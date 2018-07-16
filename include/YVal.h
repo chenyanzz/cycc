@@ -17,12 +17,18 @@
 class YVal: public Executable {
 public:
 
-	//@throws YParseFailedException
+	//!@throws YParseFailedException
 	static YVal* parse(const char* s);
 
 	YVal* clone();
 	YVal* castTo(YType* pNewType);
 
+	long double getNum(YType* pType);
+
+	template <typename T>
+	void setNum(T equal_what);
+
+	//just return the (Type*)pData, NEVER cast the values *pData
 	template <typename Type = void>
 	Type& data();
 
@@ -31,6 +37,7 @@ public:
 	YVal* execute() override;
 
 	//operators below
+	void assign(YVal* v);
 
 	static YVal* add(YVal* v1, YVal* v2);
 	static YVal* sub(YVal* v1, YVal* v2);
@@ -40,6 +47,7 @@ public:
 	static YVal* neg(YVal* v);
 
 	virtual ~YVal();
+	void deleteData();
 	friend void test_YVal(); //for debug
 	friend class YExpression;
 	friend class YVar;
@@ -57,7 +65,7 @@ protected:
 	YVal(YVal* pVal);
 	YVal::YVal(YType* ptype);
 
-	//! new YVal's data is COPIED from pdata
+	// new YVal's data is COPIED from pdata
 	YVal::YVal(YType* ptype, void* pdata);
 
 	template <typename T>

@@ -170,6 +170,14 @@ YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
 	return NOTHING;
 }
 
+inline void skipSuffix(const char*& p) {
+	while ((*p == 'L') || (*p == 'l') || (*p == 'F') || (*p == 'f') || (*p == 'u') || (*p == 'U'))p++;
+}
+
+inline void skipInt(const char*&p) {
+	while (*p >= '0' && *p <= '9') p++;
+}
+
 Executable* YExpression::parseIdentifier(const char*& str) {
 	skipBlank(str);
 	if (*str == '(') return parseParentheses(str);
@@ -181,17 +189,19 @@ Executable* YExpression::parseIdentifier(const char*& str) {
 
 	//for a number literal
 	if (*p >= '0' && *p <= '9') {
-		//skip integer part
-		while (*p >= '0' && *p <= '9') p++;
+		skipInt(p);
 		//deal \.\d+
 		if (*p != '.') {
+			skipSuffix(p);
 			char* s_int = newString(str, p);
 			str = p;
 			return YVal::parseInt(s_int);
 		}
+		
 		//deal \d*\.\d*
 		p++;//p==decimal part
-		while (*p >= '0' && *p <= '9') p++;
+		skipInt(p);
+		skipSuffix(p);
 		char* s_decimal = newString(str, p);
 		str = p;
 		return YVal::parseDecimal(s_decimal);

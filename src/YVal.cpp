@@ -33,46 +33,46 @@ YVal* YVal::exec_op1(YVal* v, func_1op_t operation) {
 	return YVal::newFrom(YNumType::LongDouble, operation(number));
 }
 
-//stat: do with (long double)num = pVal->data<pType>()
-#define getNum(pType,pVal,stat){	\
-long double num=0;	\
-if (pType == YNumType::Float)num = pVal->data<float>();	\
-else if (pType == YNumType::Double)num = pVal->data<double>();	\
-else if (pType == YNumType::LongDouble)num = pVal->data<long double>();	\
-else if (pType == YNumType::Char)num = (int)pVal->data<char>();/*do not show as a char*/	\
-else if (pType == YNumType::Short)num = pVal->data<short>();	\
-else if (pType == YNumType::Int)num = pVal->data<int>();	\
-else if (pType == YNumType::Long)num = pVal->data<long>();	\
-else if (pType == YNumType::LongLong)num = pVal->data<long long>();	\
-else if (pType == YNumType::UChar)num = (int)pVal->data<unsigned char>();/*do not show as a char*/	\
-else if (pType == YNumType::UShort)num = pVal->data<unsigned short>();	\
-else if (pType == YNumType::UInt)num = pVal->data<unsigned int>();	\
-else if (pType == YNumType::ULong)num = pVal->data<unsigned long>();	\
-else if (pType == YNumType::ULongLong)num = pVal->data<unsigned long long>();	\
-stat;	\
+long double YVal::getNum(YType* pType) {
+	long double num = 0;
+	if(pType == YNumType::Float)num = this->data<float>();
+	else if(pType == YNumType::Double)num = this->data<double>();
+	else if(pType == YNumType::LongDouble)num = this->data<long double>();
+	else if(pType == YNumType::Char)num = (int)this->data<char>(); /*do not show as a char*/
+	else if(pType == YNumType::Short)num = this->data<short>();
+	else if(pType == YNumType::Int)num = this->data<int>();
+	else if(pType == YNumType::Long)num = this->data<long>();
+	else if(pType == YNumType::LongLong)num = this->data<long long>();
+	else if(pType == YNumType::UChar)num = (int)this->data<unsigned char>(); /*do not show as a char*/
+	else if(pType == YNumType::UShort)num = this->data<unsigned short>();
+	else if(pType == YNumType::UInt)num = this->data<unsigned int>();
+	else if(pType == YNumType::ULong)num = this->data<unsigned long>();
+	else if(pType == YNumType::ULongLong)num = this->data<unsigned long long>();
+	return num;
 }
 
-#define setNum(pVal,equal_what){	\
-if (pVal->pType == YNumType::Float)pVal->data<float>() = equal_what;	\
-else if (pVal->pType == YNumType::Double)pVal->data<double>() = equal_what;	\
-else if (pVal->pType == YNumType::LongDouble)pVal->data<long double>() = equal_what;	\
-else if (pVal->pType == YNumType::Char)pVal->data<char>() = equal_what;	\
-else if (pVal->pType == YNumType::Short)pVal->data<short>() = equal_what;	\
-else if (pVal->pType == YNumType::Int)pVal->data<int>() = equal_what;	\
-else if (pVal->pType == YNumType::Long)pVal->data<long>() = equal_what;	\
-else if (pVal->pType == YNumType::LongLong)pVal->data<long long>() = equal_what;	\
-else if (pVal->pType == YNumType::UChar)pVal->data<unsigned char>() = equal_what;	\
-else if (pVal->pType == YNumType::UShort)pVal->data<unsigned short>() = equal_what;	\
-else if (pVal->pType == YNumType::UInt)pVal->data<unsigned int>() = equal_what;	\
-else if (pVal->pType == YNumType::ULong)pVal->data<unsigned long>() = equal_what;	\
-else if (pVal->pType == YNumType::ULongLong)pVal->data<unsigned long long>() = equal_what;	\
+template <typename T>
+void YVal::setNum(T equal_what) {
+	if(this->pType == YNumType::Float)this->data<float>() = equal_what;
+	else if(this->pType == YNumType::Double)this->data<double>() = equal_what;
+	else if(this->pType == YNumType::LongDouble)this->data<long double>() = equal_what;
+	else if(this->pType == YNumType::Char)this->data<char>() = equal_what;
+	else if(this->pType == YNumType::Short)this->data<short>() = equal_what;
+	else if(this->pType == YNumType::Int)this->data<int>() = equal_what;
+	else if(this->pType == YNumType::Long)this->data<long>() = equal_what;
+	else if(this->pType == YNumType::LongLong)this->data<long long>() = equal_what;
+	else if(this->pType == YNumType::UChar)this->data<unsigned char>() = equal_what;
+	else if(this->pType == YNumType::UShort)this->data<unsigned short>() = equal_what;
+	else if(this->pType == YNumType::UInt)this->data<unsigned int>() = equal_what;
+	else if(this->pType == YNumType::ULong)this->data<unsigned long>() = equal_what;
+	else if(this->pType == YNumType::ULongLong)this->data<unsigned long long>() = equal_what;
 }
 
 const char* YVal::className() const { return "YVal"; }
 
 void YVal::print() {
 	if(pType->base_type == YNumType::cNum) {
-		getNum(pType, this, cout << num);
+		cout << getNum(pType);
 	}
 }
 
@@ -344,8 +344,8 @@ YVal* YVal::castTo(YType* pNewType) {
 
 		long double oldval = 0.0l;
 
-		getNum(pType, this, oldval = num);
-		setNum(pNewVal, oldval);
+		oldval = getNum(pType);
+		pNewVal->setNum(oldval);
 	}
 
 	return pNewVal;
@@ -370,6 +370,10 @@ template <typename T>
 YVal* YVal::newFrom(YType* type, T data) { return new YVal(type, &data); }
 
 YVal::~YVal() {
+	deleteData();
+}
+
+void YVal::deleteData() {
 	delete pData;
 	pData = nullptr;
 	pType = nullptr;
