@@ -8,6 +8,7 @@
 #include "YVal.h"
 #include "YException.h"
 #include "stringUtils.h"
+#include "numberUtils.h"
 
 using namespace std;
 
@@ -120,8 +121,7 @@ YVal* YVal::parseInt(const char* s) {
 	case '+':
 		pc_num++;
 		const char c = *pc_num;
-		if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
-			throw YParseFailedException("YVal", s, "is not a number");
+		if(!isHexDigit(c)) throw YParseFailedException("YVal", s, "is not a number");
 	}
 
 	//deal with hex oct bin
@@ -181,7 +181,7 @@ YVal* YVal::parseInt(const char* s) {
 		const char hexletter = (*pc_num | (char)0x20);
 		int bitval;
 
-		if(*pc_num >= '0' && *pc_num <= '9') {
+		if(isDecDigit(*pc_num)) {
 			bitval = *pc_num - '0';
 		} else if(hexletter >= 'a' && hexletter <= 'f') {
 			bitval = hexletter - 'a' + 10;
@@ -315,7 +315,7 @@ YVal* YVal::parseDecimal(const char* s) {
 	long double dec_val = 0;
 
 	for(char* pc = buf + len - 1; *pc != '.'; pc--) {
-		if(*pc >= '0' && *pc <= '9') {
+		if(isDecDigit(*pc)) {
 			dec_val += *pc - '0';
 			dec_val /= 10;
 		} else {

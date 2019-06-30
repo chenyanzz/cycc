@@ -6,6 +6,7 @@
 #include <iostream>
 #include <deque>
 #include "stringUtils.h"
+#include "numberUtils.h"
 
 using namespace std;
 
@@ -112,7 +113,9 @@ YExpression::OperationNode* YExpression::parseParentheses(const char*& first) {
 	} while (deep > 0);
 
 	char* s_expr = newString(l_parenthesis + 1, first - 1);
-	return makeOperationTree(s_expr);
+	auto tree = makeOperationTree(s_expr);
+	free(s_expr);
+	return tree;
 }
 
 YExpression::EOperatorType YExpression::parseSign(const char*& str) {
@@ -170,42 +173,27 @@ YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
 	return NOTHING;
 }
 
-inline void skipSuffix(const char*& p) {
-	while ((*p == 'L') || (*p == 'l') || (*p == 'F') || (*p == 'f') || (*p == 'u') || (*p == 'U'))p++;
-}
-
-inline void skipInt(const char*&p) {
-	while (*p >= '0' && *p <= '9') p++;
-}
-
 Executable* YExpression::parseIdentifier(const char*& str) {
 	skipBlank(str);
 	if (*str == '(') return parseParentheses(str);
-	
-	const char* p = str;
-	//skip signs
-	if(*p == '+')p++;
-	if(*p == '-')p++;
 
-	//for a number literal
-	if (*p >= '0' && *p <= '9') {
-		skipInt(p);
-		//deal \.\d+
-		if (*p != '.') {
-			skipSuffix(p);
-			char* s_int = newString(str, p);
-			str = p;
-			return YVal::parseInt(s_int);
-		}
-		
-		//deal \d*\.\d*
-		p++;//p==decimal part
-		skipInt(p);
-		skipSuffix(p);
-		char* s_decimal = newString(str, p);
-		str = p;
-		return YVal::parseDecimal(s_decimal);
-	}
+	/*
+	123
+	0xabc
+	0123
+	123.4
+	*/
+	const char* end = str;
+	while(isDecDigit(*end)) end++;
+	if(*end=='x' || *end=='X' || *end=='.') end++;
+	while(isHexDigit(*end)) end++;
+	while(isNumSuffix(*end)) end++;
+
+	auto num_str = newString(str,end);
+	auto val = YVal::parse(num_str);
+	free(num_str);
+	str = end;
+	return val;
 }
 
 YExpression::priority_t YExpression::getPriority(EOperatorType type) { return operator_priority.find(type)->second; }

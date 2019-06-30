@@ -18,8 +18,10 @@ bool isFirstSubStr(const char* total, const char* substr);
 
 bool isLastSubStr(const char* total, size_t total_len, const char* substr, size_t substr_len);
 
+//@Warning: Must do free() manually!
 char* newString(const char* begin, int len);
 
+//@Warning: Must do free() manually!
 //returns [begin,end)
 char* newString(const char* begin, const char* end);
 
