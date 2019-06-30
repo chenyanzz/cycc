@@ -13,6 +13,7 @@
 #include "stringUtils.h"
 #include "YExpression.h"
 #include "YVar.h"
+#include "assert.h"
 
 #define RUN(expr) do{try{expr;}catch(YException& e){e.print();}cout<<endl;}while(false)
 
@@ -22,9 +23,9 @@ void test_YNumType() {
 	RUN(YNumType::Char->print());
 	RUN(YNumType::parse("unsigned long long")->print());
 	RUN(YNumType::parse("signed short")->print());
-	RUN(YNumType::parse("hia int")->print());
-	RUN(YNumType::parse("int hia")->print());
-	RUN(YNumType::parse("hiahia")->print());
+	assert(!YNumType::parse("unsigned hia int"));
+	assert(!YNumType::parse("signed int hia"));
+	assert(!YNumType::parse("hiahia"));
 }
 
 
@@ -194,6 +195,12 @@ void test_YExpression() {
 }
 
 void calculator() {
+	cout << endl << "******** " << __FUNCTION__ << " ********" << endl;
+
+	printf("\nCyCalc v1.0\n");
+	printf("You can input +-*/()enter \n");
+	printf("input exit to exit. \n");
+
 	while(true) {
 		try {
 			cout << "> ";
@@ -212,15 +219,6 @@ void calculator() {
 	}
 }
 
-void easter_egg() {
-	cout << endl << "******** " << __FUNCTION__ << " ********" << endl;
-
-	printf("\nCyCalc v1.0\n");
-	printf("You can input +-*/()enter \n");
-	printf("input exit to exit. \n");
-	calculator();
-}
-
 void test_YVar() {
 	cout << endl << "******** " << __FUNCTION__ << " ********" << endl;
 
@@ -230,16 +228,26 @@ void test_YVar() {
 	RUN(YVar::parse("long double lf2 = 123.456;")->print());
 }
 
+void test_YType() {
+	cout << endl << "******** " << __FUNCTION__ << " ********" << endl;
+	RUN(YType::parse("int")->print());
+	RUN(YType::parse("unsigned long long")->print());
+	RUN(YType::parse("signed short")->print());
+	RUN(YType::parse("unsigned hia int")->print());
+	RUN(YType::parse("signed int hia")->print());
+	RUN(YType::parse("hiahia")->print());
+}
+
 void doTests() {
 	YType::init();
 
 	// test_exception();
-	// test_YNumType();
+	test_YType();
 	// test_stringUtils();
 	// test_YVal();
 	// test_YExpression();
 	// test_YVar();
-	easter_egg();
+	
 
 	YType::terminate();
 }

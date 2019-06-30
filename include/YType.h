@@ -18,8 +18,6 @@ public:
 protected:
 	typedef std::set<YType*> TypeList;
 	static TypeList types;
-	static const char* str_unsigned;
-	static const char* str_signed;
 	
 public:
 	std::string name = "";

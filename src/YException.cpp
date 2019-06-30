@@ -32,7 +32,6 @@ const string YException::what() {
 }
 
 void YException::print() {
-	cout << endl << "[" << className() << "] encountered:" << endl;
 	cout << this->what() << endl << endl;
 }
 
