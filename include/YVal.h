@@ -37,7 +37,6 @@ public:
 	YVal* execute() override;
 
 	//operators below
-	void assign(YVal* v);
 
 	static YVal* add(YVal* v1, YVal* v2);
 	static YVal* sub(YVal* v1, YVal* v2);
@@ -63,10 +62,10 @@ protected:
 	static YVal* parseDecimal(const char* s);
 
 	YVal(YVal* pVal);
-	YVal::YVal(YType* ptype);
+	YVal(YType* ptype);
 
 	// new YVal's data is COPIED from pdata
-	YVal::YVal(YType* ptype, void* pdata);
+	YVal(YType* ptype, void* pdata);
 
 	template <typename T>
 	static YVal* newFrom(YType* type, T data);

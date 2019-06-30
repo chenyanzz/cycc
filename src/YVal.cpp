@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#pragma warning(disable:4244) //casting
+
 #define CHECK_NULLPTR(param) if((param)==nullptr){throw YNullptrException(#param);}
 
 template <typename func_2op_t>
@@ -227,12 +229,24 @@ YVal* YVal::execute() { return this->clone(); }
 YVal* YVal::add(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 + v2; }); }
 YVal* YVal::sub(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 - v2; }); }
 YVal* YVal::mul(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 * v2; }); }
-YVal* YVal::div(YVal* v1, YVal* v2) { return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 / v2; }); }
+YVal* YVal::div(YVal* v1, YVal* v2) {
+	YType* t1 = v1->type();
+	YType* t2 = v2->type();
+
+	//if 1/0 throw an error
+	if( (t1->base_type==YType::cNum) && dynamic_cast<YNumType*>(t1)->isInteger() &&
+		(t2->base_type==YType::cNum) && dynamic_cast<YNumType*>(t2)->isInteger() &&
+		v2->castTo(YNumType::LongDouble)->data<long double>()==0 ) {
+		throw YDividedByZeroException();
+	}
+	return exec_op2(v1, v2, [](auto v1, auto v2) { return v1 / v2; });
+}
 YVal* YVal::neg(YVal* v) { return exec_op1(v, [](auto v) { return -v; }); }
 
 YVal* YVal::parseDecimal(const char* s) {
 
-	if(!strcmp(s, ".")) {
+	//no dot or only a dot'.'
+	if(!strchr(s,'.') || !strcmp(s, ".")) {
 		throw YException("[YException] \"%s\" is not a proper decimal", s);
 	}
 
@@ -380,4 +394,4 @@ void YVal::deleteData() {
 }
 
 template <typename Type>
-Type& YVal::data() { return *(Type*)pData; }
+Type& YVal::data() { return * reinterpret_cast<Type*>(pData); }

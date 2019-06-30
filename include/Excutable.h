@@ -6,10 +6,9 @@
 
 #pragma once
 #include "CYCC.h"
-extern class YVal;
 
 class Executable: public CYCC {
 public:
-	virtual YVal* execute() =0;
+	virtual class YVal* execute() =0;
 	virtual ~Executable() = default;
 };

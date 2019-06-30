@@ -40,3 +40,7 @@ void YNumType::print() {
 	cout << "[YNum]{name=\"" << name << "\"}";
 }
 
+bool YNumType::isInteger(){
+	return (this!=Float) && (this!=Double) && (this!=LongDouble);
+}
+

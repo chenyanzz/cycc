@@ -19,7 +19,7 @@ public:
 	void print() override;
 
 	YException(const char* errStr, ...);
-	const char* what();
+	const std::string what();
 
 	virtual ~YException() = default;
 };
@@ -28,7 +28,7 @@ class YInvalidCharException : public YException
 {
 public:
 	const char* className() const override;
-	YInvalidCharException(const char* src, int pos, const char* msg);
+	YInvalidCharException(const char* src, size_t pos, const char* msg);
 };
 
 class YNoSuchTypeException : public YException
@@ -52,6 +52,8 @@ public:
 	YNullptrException(const char* name);
 };
 
+
+
 class YTypeNotFoundException : public YException
 {
 public:
@@ -64,4 +66,11 @@ class YNotAAvailableNameException : public YException
 public:
 	const char* className() const override;
 	YNotAAvailableNameException(const char* name);
+};
+
+class YDividedByZeroException : public YException
+{
+public:
+	const char* className() const override;
+	YDividedByZeroException();
 };

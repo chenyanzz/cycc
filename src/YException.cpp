@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdarg>
+#include <string>
 #include "YException.h"
 
 using namespace std;
@@ -25,7 +26,10 @@ YException::YException(const char* pc_err_str, ...) {
 	va_end(vl);
 };
 
-const char* YException::what() { return err_str.c_str(); }
+const string YException::what() { 
+	err_str = string()+"@"+className()+":\n"+err_str;
+	return err_str;
+}
 
 void YException::print() {
 	cout << endl << "[" << className() << "] encountered:" << endl;
@@ -35,7 +39,7 @@ void YException::print() {
 //YInvalidCharException
 const char* YInvalidCharException::className() const { return "YInvalidCharException"; }
 
-YInvalidCharException::YInvalidCharException(const char* src, int pos, const char* msg)
+YInvalidCharException::YInvalidCharException(const char* src, size_t pos, const char* msg)
 	: YException("%s\n%s\n%*s", msg, src, pos + 1, "^") {}
 
 //YNoSuchTypeException
@@ -66,3 +70,9 @@ const char* YNotAAvailableNameException::className() const { return "YNotAAvaila
 
 YNotAAvailableNameException::YNotAAvailableNameException(const char* name)
 	:YException("\"%s\" is not a available name",name){}
+
+//YDividedByZeroException
+const char* YDividedByZeroException::className() const{return "YDividedByZeroException";}
+
+YDividedByZeroException::YDividedByZeroException()
+	:YException("divided by zero"){}

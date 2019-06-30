@@ -7,13 +7,14 @@
 #include "YVal.h"
 #include "YExpression.h"
 #include <string>
+#include <vector>
 
 class YVar: public Executable {
 public:
 	YVar(const char* name, YVal* val = nullptr);
 
 	//just parse strings like "char c"
-	//WITHOUT ';' or '='
+	//WITHOUT ';' or '=' or ','
 	static YVar* parse(const char* str);
 
 	//call me when executing the declearation statement
@@ -23,6 +24,9 @@ public:
 	~YVar() override;
 	const char* className() const override;
 	void print() override;
+
+	//dealing [YVal] = [YVal];
+	void assignTo(YVal* v);
 
 protected:
 	const std::string name;

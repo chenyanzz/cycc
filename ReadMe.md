@@ -2,9 +2,9 @@
 
 
 ## 简介
-又一个准高一小天使没事闲的挖的新坑：从零开始写个C解释器 emm...
+又一个准高一小孩子没事闲的挖的新坑：从零开始写个C解释器 emm...
 路漫漫其修远兮，吾将上下而求索
-
+好了现在高二了。鸽了一年又是暑假。
 
 ## 架构介绍
 
@@ -13,21 +13,21 @@
 
 ### 特殊类
 
-- [ ] YCode  基类
-- [ ] YEnv   执行环境控制及变量生命周期管理
+YCode  基类
+YEnv   执行环境控制及变量生命周期管理
 
 ### 解析类
 
-- [x] YType
-    - [x] YNumType
-    - [ ] YPtrType
-    - [ ] YStructType
-    - [ ] YEnumType
-- [x] YVar
-- [x] YExpression
-- [ ] YStatement
-- [ ] YSCope
-- [ ] YFunction
+YType
+    YNumType
+    YPtrType
+    YStructType
+    YEnumType
+YVar
+YExpression
+YStatement
+YSCope
+YFunction
 
 ### 开发思路
 

@@ -30,4 +30,5 @@ public:
 
 	virtual ~YNumType() = default;
 
+	bool isInteger();
 };

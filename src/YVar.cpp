@@ -13,6 +13,10 @@ void YVar::print() {
 	cout << "}";
 }
 
+void YVar::assignTo(YVal* v) {
+	
+}
+
 bool YVar::isAvailableVarName(const char* name) {
 	if(name[0] >= '0' && name[0] <= '9')return false;
 
