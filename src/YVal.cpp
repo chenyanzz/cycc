@@ -114,7 +114,6 @@ YVal* YVal::parseInt(const char* s) {
 	}
 
 	/*prefix*/
-
 	switch(*pc_num) {
 	case '-':
 		bNegative = true;

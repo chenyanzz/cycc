@@ -175,8 +175,16 @@ YExpression::EOperatorType YExpression::parseFrefix(const char*& str) {
 
 Executable* YExpression::parseIdentifier(const char*& str) {
 	skipBlank(str);
-	if (*str == '(') return parseParentheses(str);
-
+	if(*str == '(') return parseParentheses(str);
+	if(*str =='\''){
+		const char* end = str+1;
+		while(*end++ != '\'');
+		auto char_str = newString(str,end);
+		auto val = YVal::parseInt(char_str);
+		str = end;
+		free(char_str);
+		return val;
+	}
 	/*
 	123
 	0xabc
